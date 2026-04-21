@@ -1,0 +1,2443 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Rynva – Dein Zyklus-Begleiter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  /* ===========================
+     CSS CUSTOM PROPERTIES
+  =========================== */
+  :root {
+    --rose-deep:    #c97b8a;
+    --rose-mid:     #e8a5b4;
+    --rose-soft:    #f5cdd7;
+    --rose-pale:    #fdf0f3;
+    --lilac-deep:   #9b7bb5;
+    --lilac-mid:    #c4a8d8;
+    --lilac-soft:   #e8d9f5;
+    --peach:        #f2b89a;
+    --peach-soft:   #fde8dc;
+    --gold:         #d4a96a;
+    --text-dark:    #3a2435;
+    --text-mid:     #7a5a6a;
+    --text-soft:    #b89aaa;
+    --white:        #ffffff;
+    --surface:      #fefafe;
+
+    /* Phase colors */
+    --phase-men:    #e87a8a;
+    --phase-fol:    #9b7bb5;
+    --phase-ov:     #f2b89a;
+    --phase-lut:    #7ab5a0;
+
+    --shadow-soft:  0 4px 24px rgba(180,100,140,0.10);
+    --shadow-card:  0 2px 12px rgba(150,80,120,0.08);
+    --radius:       18px;
+    --radius-sm:    10px;
+  }
+
+  /* ===========================
+     RESET & BASE
+  =========================== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { font-size: 16px; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--rose-pale);
+    color: var(--text-dark);
+    min-height: 100vh;
+    padding-bottom: 80px;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Playfair Display', serif;
+  }
+
+  /* ===========================
+     HEADER
+  =========================== */
+  .app-header {
+    background: linear-gradient(135deg, var(--rose-deep) 0%, var(--lilac-deep) 100%);
+    padding: 20px 20px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .app-header::before {
+    content: '';
+    position: absolute;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    top: -60px; right: -40px;
+  }
+  .app-header::after {
+    content: '';
+    position: absolute;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+    bottom: -30px; left: 20px;
+  }
+  .header-inner { position: relative; z-index: 1; }
+  .app-title {
+    color: white;
+    font-size: 1.7rem;
+    font-style: italic;
+    letter-spacing: 0.02em;
+  }
+  .app-subtitle {
+    color: rgba(255,255,255,0.75);
+    font-size: 0.8rem;
+    font-weight: 300;
+    margin-top: 2px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .cycle-day-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 100px;
+    padding: 5px 14px;
+    color: white;
+    font-size: 0.82rem;
+    font-weight: 500;
+    backdrop-filter: blur(4px);
+  }
+
+  /* ===========================
+     BOTTOM NAV
+  =========================== */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: white;
+    display: flex;
+    border-top: 1px solid var(--rose-soft);
+    box-shadow: 0 -4px 20px rgba(180,100,130,0.10);
+    z-index: 100;
+  }
+  .nav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 4px 12px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--text-soft);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    transition: color 0.2s;
+    gap: 4px;
+  }
+  .nav-btn.active { color: var(--rose-deep); }
+  .nav-btn svg { width: 22px; height: 22px; }
+  .nav-btn.active svg path, .nav-btn.active svg circle { stroke: var(--rose-deep); }
+
+  /* ===========================
+     MAIN CONTENT
+  =========================== */
+  .page { display: none; padding: 16px; animation: fadeIn 0.3s ease; }
+  .page.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===========================
+     CARDS
+  =========================== */
+  .card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow-card);
+  }
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .card-title .emoji { font-size: 1.1rem; }
+
+  /* ===========================
+     PHASE BANNER
+  =========================== */
+  .phase-banner {
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    position: relative;
+    overflow: hidden;
+    color: white;
+  }
+  .phase-banner::after {
+    content: '';
+    position: absolute;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.10);
+    bottom: -30px; right: -20px;
+  }
+  .phase-banner.men  { background: linear-gradient(120deg, #e87a8a, #c95577); }
+  .phase-banner.fol  { background: linear-gradient(120deg, #9b7bb5, #7052a0); }
+  .phase-banner.ov   { background: linear-gradient(120deg, #f2a070, #e07550); }
+  .phase-banner.lut  { background: linear-gradient(120deg, #7ab5a0, #4d9080); }
+
+  .phase-label {
+    font-size: 0.72rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.85;
+  }
+  .phase-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    font-style: italic;
+    margin: 2px 0 6px;
+  }
+  .phase-desc { font-size: 0.8rem; opacity: 0.9; line-height: 1.5; }
+
+  /* ===========================
+     TOGGLE PERIOD
+  =========================== */
+  .period-toggle {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .toggle-btn {
+    flex: 1;
+    border: 2px solid var(--rose-soft);
+    background: white;
+    border-radius: 100px;
+    padding: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text-mid);
+    transition: all 0.2s;
+  }
+  .toggle-btn.active {
+    background: var(--rose-deep);
+    border-color: var(--rose-deep);
+    color: white;
+  }
+
+  .strength-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .str-btn {
+    flex: 1;
+    border: 1.5px solid var(--rose-soft);
+    background: white;
+    border-radius: 100px;
+    padding: 7px 4px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    cursor: pointer;
+    color: var(--text-mid);
+    transition: all 0.2s;
+  }
+  .str-btn.active { background: var(--rose-soft); border-color: var(--rose-deep); color: var(--rose-deep); font-weight: 600; }
+
+  /* ===========================
+     MOOD GRID
+  =========================== */
+  .mood-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .mood-chip {
+    border: 1.5px solid var(--rose-soft);
+    background: white;
+    border-radius: 100px;
+    padding: 6px 13px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    color: var(--text-mid);
+    transition: all 0.18s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .mood-chip.active {
+    background: var(--lilac-soft);
+    border-color: var(--lilac-deep);
+    color: var(--lilac-deep);
+    font-weight: 500;
+  }
+  .mood-note {
+    width: 100%;
+    border: 1.5px solid var(--rose-soft);
+    border-radius: var(--radius-sm);
+    padding: 10px 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    color: var(--text-dark);
+    resize: none;
+    outline: none;
+    background: var(--rose-pale);
+    transition: border-color 0.2s;
+    margin-top: 4px;
+  }
+  .mood-note:focus { border-color: var(--rose-deep); }
+  .mood-note::placeholder { color: var(--text-soft); }
+
+  /* ===========================
+     ADD-MOOD BUTTON (+ chip)
+  =========================== */
+  .mood-add-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border: 1.5px dashed var(--rose-mid);
+    background: transparent;
+    border-radius: 100px;
+    padding: 6px 13px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    color: var(--rose-deep);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    transition: background 0.18s, border-color 0.18s;
+  }
+  .mood-add-btn:hover { background: var(--rose-pale); border-color: var(--rose-deep); }
+  .mood-add-btn .plus { font-size: 1rem; line-height: 1; }
+
+  /* Custom chip: has a small × delete button */
+  .mood-chip.custom { position: relative; padding-right: 26px; }
+  .mood-chip-del {
+    position: absolute;
+    right: 7px; top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.75rem;
+    color: var(--lilac-deep);
+    line-height: 1;
+    padding: 0 1px;
+    opacity: 0.6;
+    transition: opacity 0.15s;
+  }
+  .mood-chip-del:hover { opacity: 1; }
+
+  /* ===========================
+     ADD-MOOD MODAL
+  =========================== */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(40, 20, 35, 0.45);
+    z-index: 300;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+    backdrop-filter: blur(3px);
+  }
+  .modal-backdrop.open { opacity: 1; pointer-events: all; }
+
+  .modal-sheet {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    background: white;
+    border-radius: 22px 22px 0 0;
+    padding: 0 0 env(safe-area-inset-bottom, 16px);
+    z-index: 301;
+    transform: translateY(100%);
+    transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal-sheet.open { transform: translateY(0); }
+
+  .modal-handle {
+    width: 36px; height: 4px;
+    border-radius: 2px;
+    background: var(--rose-soft);
+    margin: 12px auto 0;
+  }
+  .modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px 10px;
+    border-bottom: 1px solid var(--rose-soft);
+  }
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--text-dark);
+  }
+  .modal-close {
+    width: 30px; height: 30px;
+    border: none; background: var(--rose-pale);
+    border-radius: 50%; cursor: pointer;
+    font-size: 1rem; color: var(--text-mid);
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+  }
+  .modal-close:hover { background: var(--rose-soft); }
+
+  .modal-body { padding: 16px 20px 20px; }
+
+  .modal-field-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-soft);
+    margin-bottom: 7px;
+  }
+
+  /* Emoji quick-pick grid */
+  .emoji-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .emoji-pick {
+    aspect-ratio: 1;
+    border: 1.5px solid var(--rose-soft);
+    border-radius: 10px;
+    background: white;
+    font-size: 1.25rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    line-height: 1;
+  }
+  .emoji-pick:hover  { background: var(--rose-pale); border-color: var(--rose-mid); }
+  .emoji-pick.chosen { background: var(--lilac-soft); border-color: var(--lilac-deep); transform: scale(1.12); }
+
+  /* Selected emoji display + name field row */
+  .modal-compose {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .modal-emoji-preview {
+    width: 52px; height: 52px;
+    border: 2px solid var(--rose-soft);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.7rem;
+    background: var(--rose-pale);
+    flex-shrink: 0;
+    cursor: text;
+    transition: border-color 0.2s;
+    position: relative;
+  }
+  .modal-emoji-preview input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    width: 100%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 0;
+  }
+  .modal-name-input {
+    flex: 1;
+    border: 1.5px solid var(--rose-soft);
+    border-radius: var(--radius-sm);
+    padding: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    color: var(--text-dark);
+    background: var(--rose-pale);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .modal-name-input:focus { border-color: var(--rose-deep); }
+  .modal-name-input::placeholder { color: var(--text-soft); }
+
+  .modal-save-btn {
+    width: 100%;
+    background: linear-gradient(120deg, var(--rose-deep), var(--lilac-deep));
+    color: white;
+    border: none;
+    border-radius: 100px;
+    padding: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+  .modal-save-btn:active { opacity: 0.85; transform: scale(0.98); }
+  .modal-save-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+  /* ===========================
+     SAVE BUTTON
+  =========================== */
+  .save-btn {
+    width: 100%;
+    background: linear-gradient(120deg, var(--rose-deep), var(--lilac-deep));
+    color: white;
+    border: none;
+    border-radius: 100px;
+    padding: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 6px;
+    transition: opacity 0.2s, transform 0.15s;
+    letter-spacing: 0.02em;
+  }
+  .save-btn:active { opacity: 0.85; transform: scale(0.98); }
+
+  .toast {
+    position: fixed;
+    bottom: 88px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--text-dark);
+    color: white;
+    padding: 10px 22px;
+    border-radius: 100px;
+    font-size: 0.84rem;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 200;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ===========================
+     CALENDAR
+  =========================== */
+  .cal-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .cal-nav button {
+    width: 36px; height: 36px;
+    border: 1.5px solid var(--rose-soft);
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--rose-deep);
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .cal-nav button:hover { background: var(--rose-soft); }
+  .cal-month {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--text-dark);
+  }
+
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    text-align: center;
+  }
+  .cal-dow {
+    font-size: 0.7rem;
+    color: var(--text-soft);
+    padding: 4px 0 6px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .cal-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 0.82rem;
+    cursor: pointer;
+    color: var(--text-mid);
+    position: relative;
+    transition: background 0.15s;
+    font-weight: 400;
+  }
+  .cal-day:hover { background: var(--rose-pale); }
+  .cal-day.today { font-weight: 700; color: var(--rose-deep); }
+  .cal-day.today::after {
+    content: '';
+    position: absolute;
+    bottom: 3px; left: 50%; transform: translateX(-50%);
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--rose-deep);
+  }
+  .cal-day.other-month { opacity: 0.25; pointer-events: none; }
+
+  /* ── Phase colours: CONFIRMED (solid) ── */
+  .cal-day.phase-men {
+    background: #ffd6dc;
+    color: #9e2a3a;
+    font-weight: 600;
+    border-radius: 50%;
+  }
+  .cal-day.phase-fol {
+    background: #c8f0e0;
+    color: #1a6644;
+    font-weight: 600;
+    border-radius: 50%;
+  }
+  .cal-day.phase-ov {
+    background: #fff0b3;
+    color: #7a5500;
+    font-weight: 600;
+    border-radius: 50%;
+  }
+  .cal-day.phase-lut {
+    background: #e4d4f8;
+    color: #5e2d91;
+    font-weight: 600;
+    border-radius: 50%;
+  }
+
+  /* ── Phase colours: PREDICTED (future – transparent + dashed ring) ── */
+  .cal-day.phase-men.predicted {
+    background: rgba(255,214,220,0.32);
+    color: #c97b8a;
+    border: 1.5px dashed #e87a8a;
+    font-weight: 400;
+  }
+  .cal-day.phase-fol.predicted {
+    background: rgba(200,240,224,0.32);
+    color: #3d9970;
+    border: 1.5px dashed #5cb88a;
+    font-weight: 400;
+  }
+  .cal-day.phase-ov.predicted {
+    background: rgba(255,240,179,0.35);
+    color: #b38600;
+    border: 1.5px dashed #d4aa00;
+    font-weight: 400;
+  }
+  .cal-day.phase-lut.predicted {
+    background: rgba(228,212,248,0.32);
+    color: #9b7bb5;
+    border: 1.5px dashed #c4a8d8;
+    font-weight: 400;
+  }
+
+  /* ── Phase dot (shown below the day number) ── */
+  .cal-day { position: relative; }
+  .phase-dot {
+    position: absolute;
+    bottom: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .phase-dot.men { background: #e87a8a; }
+  .phase-dot.fol { background: #3dba80; }
+  .phase-dot.ov  { background: #d4aa00; }
+  .phase-dot.lut { background: #9b7bb5; }
+
+  /* ── Enhanced day-detail popup ── */
+  .day-detail {
+    border-radius: var(--radius);
+    padding: 0;
+    margin-top: 12px;
+    overflow: hidden;
+    display: none;
+    box-shadow: var(--shadow-card);
+    animation: fadeIn 0.22s ease;
+  }
+  .day-detail.show { display: block; }
+  .day-detail-head {
+    padding: 13px 16px 11px;
+    color: white;
+    position: relative;
+  }
+  .day-detail-head.men  { background: linear-gradient(120deg, #e87a8a, #c95577); }
+  .day-detail-head.fol  { background: linear-gradient(120deg, #3dba80, #1a8a5a); }
+  .day-detail-head.ov   { background: linear-gradient(120deg, #f0cc40, #c8a010); }
+  .day-detail-head.lut  { background: linear-gradient(120deg, #9b7bb5, #7052a0); }
+  .day-detail-head.none { background: linear-gradient(120deg, #d0bcc8, #b09aaa); }
+  .day-detail-date {
+    font-size: 0.72rem;
+    opacity: 0.85;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .day-detail-phase {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-style: italic;
+    margin: 2px 0 1px;
+  }
+  .day-detail-cycleday {
+    font-size: 0.75rem;
+    opacity: 0.8;
+  }
+  .day-detail-body {
+    background: white;
+    padding: 12px 16px 14px;
+  }
+  .day-detail-section {
+    margin-bottom: 9px;
+  }
+  .day-detail-section:last-child { margin-bottom: 0; }
+  .day-detail-label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-soft);
+    margin-bottom: 3px;
+  }
+  .day-detail-text {
+    font-size: 0.82rem;
+    color: var(--text-dark);
+    line-height: 1.5;
+  }
+  .day-detail-entry {
+    font-size: 0.8rem;
+    color: var(--text-mid);
+    background: var(--rose-pale);
+    border-radius: var(--radius-sm);
+    padding: 8px 11px;
+    margin-top: 6px;
+    line-height: 1.6;
+  }
+  .day-detail-predicted-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.68rem;
+    background: rgba(255,255,255,0.25);
+    border-radius: 100px;
+    padding: 2px 9px;
+    margin-top: 4px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+
+  .cal-legend {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: var(--text-mid);
+  }
+  .legend-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+  }
+
+  /* ===========================
+     PREDICTION CARDS
+  =========================== */
+  .pred-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .pred-card {
+    border-radius: var(--radius);
+    padding: 16px 14px;
+    text-align: center;
+  }
+  .pred-card.period { background: linear-gradient(135deg, #fde8ec, #f5cdd7); }
+  .pred-card.ov     { background: linear-gradient(135deg, #fdecd9, #f5dcc4); }
+  .pred-icon { font-size: 1.6rem; margin-bottom: 6px; }
+  .pred-label {
+    font-size: 0.72rem;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 500;
+  }
+  .pred-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    color: var(--text-dark);
+    margin-top: 4px;
+  }
+  .pred-days {
+    font-size: 0.75rem;
+    color: var(--text-soft);
+    margin-top: 2px;
+  }
+
+  /* ===========================
+     PHASE LIST
+  =========================== */
+  .phase-list { display: flex; flex-direction: column; gap: 10px; }
+  .phase-item {
+    border-radius: var(--radius-sm);
+    padding: 13px 15px;
+    border-left: 4px solid;
+  }
+  .phase-item.men { background: #fdf0f2; border-color: var(--phase-men); }
+  .phase-item.fol { background: #f6f0fd; border-color: var(--phase-fol); }
+  .phase-item.ov  { background: #fef5ee; border-color: var(--phase-ov); }
+  .phase-item.lut { background: #eef7f4; border-color: var(--phase-lut); }
+
+  .phase-item-name {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 3px;
+  }
+  .phase-item-days {
+    font-size: 0.75rem;
+    color: var(--text-soft);
+    margin-bottom: 5px;
+  }
+  .phase-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .phase-tag {
+    font-size: 0.72rem;
+    border-radius: 100px;
+    padding: 3px 9px;
+    font-weight: 500;
+  }
+  .phase-tag.green { background: #d4f0e8; color: #2d7a60; }
+  .phase-tag.red   { background: #fddde2; color: #c0394e; }
+
+  /* ===========================
+     MOOD CHART
+  =========================== */
+  .mood-trend {
+    display: flex;
+    gap: 5px;
+    align-items: flex-end;
+    height: 60px;
+    margin-top: 10px;
+    padding: 0 4px;
+  }
+  .mood-bar {
+    flex: 1;
+    border-radius: 4px 4px 0 0;
+    background: var(--rose-soft);
+    min-height: 4px;
+    transition: height 0.4s ease;
+    cursor: pointer;
+    position: relative;
+  }
+  .mood-bar:hover { background: var(--rose-mid); }
+  .mood-bar-tip {
+    position: absolute;
+    bottom: 100%; left: 50%; transform: translateX(-50%);
+    background: var(--text-dark);
+    color: white;
+    font-size: 0.65rem;
+    padding: 3px 7px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    margin-bottom: 4px;
+    transition: opacity 0.15s;
+  }
+  .mood-bar:hover .mood-bar-tip { opacity: 1; }
+
+  /* ===========================
+     PLANNING PAGE
+  =========================== */
+  .date-input-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .date-input-row input[type="date"] {
+    flex: 1;
+    border: 1.5px solid var(--rose-soft);
+    border-radius: var(--radius-sm);
+    padding: 11px 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    color: var(--text-dark);
+    background: var(--rose-pale);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .date-input-row input[type="date"]:focus { border-color: var(--rose-deep); }
+  .check-btn {
+    background: var(--rose-deep);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 11px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    cursor: pointer;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+  }
+  .check-btn:hover { opacity: 0.88; }
+
+  .plan-result {
+    border-radius: var(--radius);
+    padding: 16px;
+    display: none;
+  }
+  .plan-result.show { display: block; }
+  .plan-result-phase {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .plan-result-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+  }
+  .plan-do, .plan-dont {
+    font-size: 0.82rem;
+    line-height: 1.7;
+  }
+  .plan-do::before   { content: '✓  '; color: #2d7a60; font-weight: 700; }
+  .plan-dont::before { content: '×  '; color: #c0394e; font-weight: 700; }
+  .plan-divider { border: none; border-top: 1px solid rgba(0,0,0,0.07); margin: 8px 0; }
+
+  /* ===========================
+     SETTINGS / SETUP
+  =========================== */
+  .setup-banner {
+    background: linear-gradient(135deg, var(--lilac-soft), var(--rose-soft));
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 14px;
+    text-align: center;
+  }
+  .setup-banner h2 {
+    font-size: 1.3rem;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+  }
+  .setup-banner p { font-size: 0.82rem; color: var(--text-mid); line-height: 1.5; }
+
+  .form-group { margin-bottom: 14px; }
+  .form-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-mid);
+    display: block;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .form-input {
+    width: 100%;
+    border: 1.5px solid var(--rose-soft);
+    border-radius: var(--radius-sm);
+    padding: 11px 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    color: var(--text-dark);
+    background: var(--rose-pale);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-input:focus { border-color: var(--rose-deep); }
+
+  /* Insights row */
+  .insights-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .insight-card {
+    background: white;
+    border-radius: var(--radius-sm);
+    padding: 12px 10px;
+    text-align: center;
+    box-shadow: var(--shadow-card);
+  }
+  .insight-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: var(--rose-deep);
+  }
+  .insight-lbl { font-size: 0.7rem; color: var(--text-soft); margin-top: 2px; }
+
+  /* Scrollable area spacer */
+  .spacer { height: 8px; }
+
+  /* Day detail */
+  .day-detail {
+    background: var(--lilac-soft);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    margin-top: 10px;
+    font-size: 0.82rem;
+    color: var(--lilac-deep);
+    line-height: 1.6;
+    display: none;
+  }
+  .day-detail.show { display: block; }
+
+  /* ===========================
+     BACKUP REMINDER BANNER
+  =========================== */
+  .backup-banner {
+    display: none;
+    align-items: flex-start;
+    gap: 10px;
+    background: linear-gradient(120deg, #fff8e6, #fef0d4);
+    border: 1.5px solid #e8c870;
+    border-radius: var(--radius);
+    padding: 13px 14px;
+    margin: 12px 16px 0;
+    animation: fadeIn 0.4s ease;
+  }
+  .backup-banner.show { display: flex; }
+  .backup-banner-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 1px; }
+  .backup-banner-text {
+    flex: 1;
+    font-size: 0.82rem;
+    color: #7a5200;
+    line-height: 1.5;
+  }
+  .backup-banner-text strong { display: block; font-size: 0.86rem; margin-bottom: 2px; }
+  .backup-banner-action {
+    background: var(--gold);
+    color: white;
+    border: none;
+    border-radius: 100px;
+    padding: 5px 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 7px;
+    transition: opacity 0.2s;
+  }
+  .backup-banner-action:hover { opacity: 0.88; }
+  .backup-banner-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #b89a50;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0 2px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    transition: color 0.15s;
+  }
+  .backup-banner-close:hover { color: #7a5200; }
+
+  /* ===========================
+     DATA BACKUP CARD
+  =========================== */
+  .data-btn-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .data-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 10px;
+    border-radius: var(--radius);
+    border: 1.5px solid var(--rose-soft);
+    background: white;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    color: var(--text-mid);
+    font-weight: 500;
+    transition: background 0.18s, border-color 0.18s, transform 0.12s;
+  }
+  .data-btn:hover  { background: var(--rose-pale); border-color: var(--rose-deep); color: var(--rose-deep); }
+  .data-btn:active { transform: scale(0.97); }
+  .data-btn .data-btn-icon { font-size: 1.5rem; }
+  .data-btn.export { border-color: #c4e8d4; }
+  .data-btn.export:hover { background: #eafaf2; border-color: #3dba80; color: #1a6644; }
+  .data-btn.import { border-color: var(--lilac-mid); }
+  .data-btn.import:hover { background: var(--lilac-soft); border-color: var(--lilac-deep); color: var(--lilac-deep); }
+
+  .last-backup-line {
+    font-size: 0.74rem;
+    color: var(--text-soft);
+    text-align: center;
+    margin-top: 6px;
+  }
+  .last-backup-line span { color: var(--rose-deep); font-weight: 500; }
+
+  /* Hidden file input for import */
+  #importFileInput { display: none; }
+
+</style>
+</head>
+<body>
+
+<!-- =====================
+     APP HEADER
+===================== -->
+<header class="app-header">
+  <div class="header-inner">
+    <h1 class="app-title">Rynva</h1>
+    <p class="app-subtitle">Dein Zyklus-Begleiter</p>
+    <div class="cycle-day-badge" id="headerBadge">
+      🌸 Lade…
+    </div>
+  </div>
+</header>
+
+<!-- =====================
+     BACKUP REMINDER BANNER
+     (shown once/month by JS)
+===================== -->
+<div class="backup-banner" id="backupBanner">
+  <div class="backup-banner-icon">💾</div>
+  <div class="backup-banner-text">
+    <strong>Monatliches Backup fällig</strong>
+    Vergiss nicht, dein Backup zu erstellen – damit sind deine Daten sicher.
+    <br>
+    <button class="backup-banner-action" onclick="exportData(); dismissBackupBanner()">
+      Jetzt sichern
+    </button>
+  </div>
+  <button class="backup-banner-close" onclick="dismissBackupBanner()" aria-label="Schließen">✕</button>
+</div>
+
+<!-- =====================
+     PAGES
+===================== -->
+
+<!-- TODAY PAGE -->
+<div class="page active" id="page-today">
+
+  <div id="phaseBanner" class="phase-banner men">
+    <div class="phase-label">Aktuelle Phase</div>
+    <div class="phase-name" id="phaseName">—</div>
+    <div class="phase-desc" id="phaseDesc">Bitte richte zunächst dein Profil ein.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="emoji">🩸</span> Periode heute?</div>
+    <div class="period-toggle">
+      <button class="toggle-btn" id="btnPeriodNo"  onclick="setPeriod(false)">Nein</button>
+      <button class="toggle-btn" id="btnPeriodYes" onclick="setPeriod(true)">Ja</button>
+    </div>
+    <div id="strengthRow" class="strength-row" style="display:none;">
+      <button class="str-btn" id="str-leicht" onclick="setStrength('leicht')">🟡 Leicht</button>
+      <button class="str-btn" id="str-mittel" onclick="setStrength('mittel')">🟠 Mittel</button>
+      <button class="str-btn" id="str-stark"  onclick="setStrength('stark')">🔴 Stark</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title" style="justify-content:space-between">
+      <span><span class="emoji">💜</span> Wie fühlst du dich?</span>
+      <button class="mood-add-btn" onclick="openMoodModal()" title="Eigenes Gefühl hinzufügen">
+        <span class="plus">＋</span> Eigenes
+      </button>
+    </div>
+    <div class="mood-grid" id="moodGrid">
+      <!-- chips injected by JS -->
+    </div>
+    <textarea class="mood-note" id="moodNote" rows="2" placeholder="Freie Notiz (optional)…"></textarea>
+  </div>
+
+  <button class="save-btn" onclick="saveToday()">Eintrag speichern ✓</button>
+  <div class="spacer"></div>
+
+  <!-- Insights -->
+  <div class="card">
+    <div class="card-title"><span class="emoji">📊</span> Letzte 30 Tage</div>
+    <div class="insights-row" id="insightsRow">
+      <div class="insight-card"><div class="insight-num" id="ins-cycle">–</div><div class="insight-lbl">Ø Zyklus</div></div>
+      <div class="insight-card"><div class="insight-num" id="ins-period">–</div><div class="insight-lbl">Ø Periode</div></div>
+      <div class="insight-card"><div class="insight-num" id="ins-entries">–</div><div class="insight-lbl">Einträge</div></div>
+    </div>
+    <div style="font-size:0.75rem;color:var(--text-soft);margin-top:2px;margin-bottom:8px;">Stimmungsverlauf (letzte 14 Tage)</div>
+    <div class="mood-trend" id="moodTrend"></div>
+  </div>
+
+</div>
+
+<!-- CALENDAR PAGE -->
+<div class="page" id="page-calendar">
+  <div class="card">
+    <div class="cal-nav">
+      <button onclick="changeMonth(-1)">‹</button>
+      <span class="cal-month" id="calMonthLabel">–</span>
+      <button onclick="changeMonth(1)">›</button>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div class="cal-legend">
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#ffd6dc;border:2px solid #e87a8a"></div>
+        Menstruation
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#c8f0e0;border:2px solid #3dba80"></div>
+        Follikelphase
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#fff0b3;border:2px solid #d4aa00"></div>
+        Ovulation
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#e4d4f8;border:2px solid #9b7bb5"></div>
+        Lutealphase
+      </div>
+      <div class="legend-item" style="margin-top:4px;width:100%">
+        <div class="legend-dot" style="background:rgba(200,240,224,0.32);border:1.5px dashed #5cb88a"></div>
+        <span style="font-style:italic">Gestrichelt = Prognose</span>
+      </div>
+    </div>
+  </div>
+  <div id="dayDetailBox" class="day-detail"></div>
+</div>
+
+<!-- PREDICTION PAGE -->
+<div class="page" id="page-predict">
+
+  <div class="pred-row">
+    <div class="pred-card period">
+      <div class="pred-icon">🩸</div>
+      <div class="pred-label">Nächste Periode</div>
+      <div class="pred-value" id="predPeriodDate">–</div>
+      <div class="pred-days"  id="predPeriodDays"></div>
+    </div>
+    <div class="pred-card ov">
+      <div class="pred-icon">🥚</div>
+      <div class="pred-label">Nächster Eisprung</div>
+      <div class="pred-value" id="predOvDate">–</div>
+      <div class="pred-days"  id="predOvDays"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="emoji">🌙</span> Zyklusphasen & Stimmung</div>
+    <div class="phase-list">
+      <div class="phase-item men">
+        <div class="phase-item-name">Menstruation (Tag 1–7)</div>
+        <div class="phase-item-days" id="pred-men-days">–</div>
+        <div style="font-size:0.78rem;color:var(--text-mid);margin-bottom:6px;">Reflektiert, ruhig, Rückzugsbedürfnis</div>
+        <div class="phase-tags">
+          <span class="phase-tag green">Ruhe & Selbstfürsorge</span>
+          <span class="phase-tag green">Ruhige Gespräche</span>
+          <span class="phase-tag red">Kein Verhandlungen</span>
+          <span class="phase-tag red">Kein Wettkampf</span>
+        </div>
+      </div>
+      <div class="phase-item fol">
+        <div class="phase-item-name">Follikelphase (Tag 6–13+)</div>
+        <div class="phase-item-days" id="pred-fol-days">–</div>
+        <div style="font-size:0.78rem;color:var(--text-mid);margin-bottom:6px;">Kreativ, voller Energie, Tatendrang</div>
+        <div class="phase-tags">
+          <span class="phase-tag green">Neue Projekte</span>
+          <span class="phase-tag green">Sport</span>
+          <span class="phase-tag green">Brainstorming</span>
+        </div>
+      </div>
+      <div class="phase-item ov">
+        <div class="phase-item-name">Ovulation (ca. Tag 14 ± 2)</div>
+        <div class="phase-item-days" id="pred-ov-days">–</div>
+        <div style="font-size:0.78rem;color:var(--text-mid);margin-bottom:6px;">Kommunikativ, selbstsicher, offen</div>
+        <div class="phase-tags">
+          <span class="phase-tag green">Verhandlungen</span>
+          <span class="phase-tag green">Präsentationen</span>
+          <span class="phase-tag green">Networking</span>
+        </div>
+      </div>
+      <div class="phase-item lut">
+        <div class="phase-item-name">Lutealphase (Tag 15–28)</div>
+        <div class="phase-item-days" id="pred-lut-days">–</div>
+        <div style="font-size:0.78rem;color:var(--text-mid);margin-bottom:6px;">Fokussiert → später PMS-Stimmung möglich</div>
+        <div class="phase-tags">
+          <span class="phase-tag green">Planung & Details</span>
+          <span class="phase-tag green">Wellness (spät)</span>
+          <span class="phase-tag red">Große Entscheidungen vermeiden (spät)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="noDataCard" style="text-align:center;color:var(--text-soft);font-size:0.85rem;padding:24px;">
+    ℹ️ Trage mindestens einen Periodenanfang ein, um Vorhersagen zu sehen.
+  </div>
+
+</div>
+
+<!-- PLANNING PAGE -->
+<div class="page" id="page-plan">
+
+  <div class="card">
+    <div class="card-title"><span class="emoji">📅</span> Datum prüfen</div>
+    <p style="font-size:0.82rem;color:var(--text-mid);margin-bottom:12px;">Gib ein Datum ein und erhalte eine Empfehlung, welche Aktivitäten passen.</p>
+    <div class="date-input-row">
+      <input type="date" id="planDate">
+      <button class="check-btn" onclick="checkDate()">Prüfen</button>
+    </div>
+    <div class="plan-result" id="planResult"></div>
+  </div>
+
+  <!-- Phase reference cards -->
+  <div class="card">
+    <div class="card-title"><span class="emoji">✨</span> Wann passt was?</div>
+    <div class="phase-list">
+      <div class="phase-item men" style="margin-bottom:8px">
+        <strong style="font-size:0.85rem">🩸 Menstruation</strong>
+        <div class="plan-do" style="font-size:0.8rem;margin-top:5px;">Selfcare, Entspannung, ruhige Gespräche, Journaling</div>
+        <div class="plan-dont" style="font-size:0.8rem;margin-top:3px;">Wichtige Verhandlungen, intensive Sport-Events, große Entscheidungen</div>
+      </div>
+      <div class="phase-item fol" style="margin-bottom:8px">
+        <strong style="font-size:0.85rem">🌱 Follikelphase</strong>
+        <div class="plan-do" style="font-size:0.8rem;margin-top:5px;">Neue Projekte starten, Sport, Brainstorming, kreative Arbeit</div>
+        <div class="plan-dont" style="font-size:0.8rem;margin-top:3px;">Rückzug, Passivität</div>
+      </div>
+      <div class="phase-item ov" style="margin-bottom:8px">
+        <strong style="font-size:0.85rem">🥚 Ovulation</strong>
+        <div class="plan-do" style="font-size:0.8rem;margin-top:5px;">Verhandlungen, Präsentationen, Dates, Networking, Auftritte</div>
+        <div class="plan-dont" style="font-size:0.8rem;margin-top:3px;">Isolation, reine Routine-Arbeit</div>
+      </div>
+      <div class="phase-item lut">
+        <strong style="font-size:0.85rem">🍂 Lutealphase</strong>
+        <div class="plan-do" style="font-size:0.8rem;margin-top:5px;">Detailarbeit, Planung, Wellness (spät), ruhige Produktivität</div>
+        <div class="plan-dont" style="font-size:0.8rem;margin-top:3px;">Große neue Projekte, intensive soziale Verpflichtungen (spät)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data Backup card -->
+  <div class="card">
+    <div class="card-title"><span class="emoji">💾</span> Datensicherung</div>
+    <p style="font-size:0.82rem;color:var(--text-mid);line-height:1.5;margin-bottom:14px;">
+      Alle Daten bleiben ausschließlich auf deinem Gerät. Erstelle regelmäßig ein Backup,
+      um nichts zu verlieren.
+    </p>
+
+    <div class="data-btn-row">
+      <button class="data-btn export" onclick="exportData()">
+        <span class="data-btn-icon">📤</span>
+        Daten exportieren
+      </button>
+      <button class="data-btn import" onclick="triggerImport()">
+        <span class="data-btn-icon">📥</span>
+        Daten importieren
+      </button>
+    </div>
+
+    <div class="last-backup-line" id="lastBackupLine">
+      Letztes Backup: <span id="lastBackupDate">–</span>
+    </div>
+
+    <!-- Hidden file input for import -->
+    <input type="file" id="importFileInput" accept=".json" onchange="handleImportFile(this)">
+  </div>
+
+  <!-- Setup card -->
+  <div class="card">
+    <div class="card-title"><span class="emoji">⚙️</span> Einstellungen</div>
+    <div class="form-group">
+      <label class="form-label">Letzter Periodenanfang</label>
+      <input class="form-input" type="date" id="settingLastPeriod">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Ø Zykluslänge (Tage)</label>
+      <input class="form-input" type="number" id="settingCycleLen" min="21" max="45" value="28">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Ø Periodendauer (Tage)</label>
+      <input class="form-input" type="number" id="settingPeriodLen" min="2" max="10" value="5">
+    </div>
+    <button class="save-btn" onclick="saveSettings()">Einstellungen speichern</button>
+  </div>
+
+</div>
+
+<!-- =====================
+     BOTTOM NAV
+===================== -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" id="nav-today" onclick="switchPage('today')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#9b9baa" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+    Heute
+  </button>
+  <button class="nav-btn" id="nav-calendar" onclick="switchPage('calendar')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#9b9baa" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+    Kalender
+  </button>
+  <button class="nav-btn" id="nav-predict" onclick="switchPage('predict')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#9b9baa" stroke-width="1.8"><path d="M2 20s4-4 10-4 10 4 10 4"/><path d="M12 4a4 4 0 0 1 4 4c0 3-4 6-4 6S8 11 8 8a4 4 0 0 1 4-4z"/></svg>
+    Vorhersage
+  </button>
+  <button class="nav-btn" id="nav-plan" onclick="switchPage('plan')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#9b9baa" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+    Planung
+  </button>
+</nav>
+
+<!-- =====================
+     ADD-MOOD MODAL
+===================== -->
+<div class="modal-backdrop" id="modalBackdrop" onclick="closeMoodModal()"></div>
+
+<div class="modal-sheet" id="moodModal" role="dialog" aria-modal="true" aria-label="Eigenes Gefühl hinzufügen">
+  <div class="modal-handle"></div>
+  <div class="modal-head">
+    <span class="modal-title">Eigenes Gefühl</span>
+    <button class="modal-close" onclick="closeMoodModal()" aria-label="Schließen">✕</button>
+  </div>
+  <div class="modal-body">
+
+    <!-- Emoji quick-pick -->
+    <div class="modal-field-label">Emoji wählen</div>
+    <div class="emoji-grid" id="emojiGrid"></div>
+
+    <!-- Compose row: emoji preview + name -->
+    <div class="modal-field-label">Vorschau &amp; Name</div>
+    <div class="modal-compose">
+      <div class="modal-emoji-preview" id="emojiPreview" title="Emoji tippen oder aus Liste wählen">
+        <span id="emojiPreviewChar">✨</span>
+        <!-- Hidden input lets mobile keyboard open for direct emoji entry -->
+        <input type="text" id="emojiDirectInput"
+               inputmode="text"
+               autocomplete="off"
+               aria-label="Emoji direkt eingeben"
+               oninput="handleDirectEmoji(this.value)"
+               placeholder="">
+      </div>
+      <input class="modal-name-input"
+             type="text"
+             id="moodNameInput"
+             maxlength="24"
+             placeholder="z. B. Dankbar"
+             oninput="updateModalSaveBtn()"
+             onkeydown="if(event.key==='Enter') saveCustomMood()">
+    </div>
+
+    <button class="modal-save-btn" id="modalSaveBtn" onclick="saveCustomMood()" disabled>
+      Gefühl speichern
+    </button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- =====================
+     JAVASCRIPT
+===================== -->
+<script>
+/* ==============================================
+   DATA MODEL
+   All data is stored in localStorage under:
+   - rynva_settings : { lastPeriod, cycleLen, periodLen }
+   - rynva_entries  : { "YYYY-MM-DD": { period, strength, moods[], note } }
+=============================================== */
+
+const MOODS = [
+  { id:'super',      label:'🌟 Super'       },
+  { id:'kraftvoll',  label:'💪 Kraftvoll'   },
+  { id:'motiviert',  label:'🚀 Motiviert'   },
+  { id:'kreativ',    label:'🎨 Kreativ'     },
+  { id:'ausgeglichen',label:'⚖️ Ausgeglichen'},
+  { id:'mude',       label:'😴 Müde'        },
+  { id:'deprimiert', label:'😔 Deprimiert'  },
+  { id:'traurig',    label:'😢 Traurig'     },
+  { id:'gereizt',    label:'😤 Gereizt'     },
+];
+
+// Mood positivity scores for chart (0–100)
+const MOOD_SCORE = {
+  super:100, kraftvoll:90, motiviert:85, kreativ:80,
+  ausgeglichen:70, mude:45, deprimiert:25, traurig:30, gereizt:35
+};
+
+/* ---- helpers ---- */
+function today()    { return dateStr(new Date()); }
+function dateStr(d) { return d.toISOString().split('T')[0]; }
+function parseDate(s){ return new Date(s + 'T00:00:00'); }
+
+function addDays(d, n) {
+  const r = new Date(d);
+  r.setDate(r.getDate() + n);
+  return r;
+}
+function diffDays(a, b) {
+  return Math.round((parseDate(b) - parseDate(a)) / 86400000);
+}
+
+/* ---- storage ---- */
+function loadSettings() {
+  const def = { lastPeriod:'', cycleLen:28, periodLen:5 };
+  try { return Object.assign(def, JSON.parse(localStorage.getItem('rynva_settings') || '{}')); }
+  catch(e){ return def; }
+}
+function saveSettingsStore(s){ localStorage.setItem('rynva_settings', JSON.stringify(s)); }
+
+/* ---- storage – localStorage (always used as local cache) ---- */
+function loadSettings() {
+  const def = { lastPeriod:'', cycleLen:28, periodLen:5 };
+  try { return Object.assign(def, JSON.parse(localStorage.getItem('rynva_settings') || '{}')); }
+  catch(e){ return def; }
+}
+function saveSettingsStore(s) {
+  localStorage.setItem('rynva_settings', JSON.stringify(s));
+}
+
+function loadEntries() {
+  try { return JSON.parse(localStorage.getItem('rynva_entries') || '{}'); }
+  catch(e){ return {}; }
+}
+function saveEntriesStore(e) {
+  localStorage.setItem('rynva_entries', JSON.stringify(e));
+}
+
+/* ---- custom moods storage ---- */
+function loadCustomMoods() {
+  try { return JSON.parse(localStorage.getItem('rynva_custom_moods') || '[]'); }
+  catch(e){ return []; }
+}
+function saveCustomMoodsStore(arr) {
+  localStorage.setItem('rynva_custom_moods', JSON.stringify(arr));
+}
+
+/* ---- global state ---- */
+let settings     = loadSettings();
+let entries      = loadEntries();
+let customMoods  = loadCustomMoods(); // [{ id, emoji, label }, ...]
+let calYear, calMonth; // calendar navigation
+let selectedMoods    = [];
+let selectedPeriod   = null;
+let selectedStrength = null;
+
+/* ==============================================
+   CYCLE CALCULATION
+=============================================== */
+
+/** Returns the start date of the cycle containing `dateStr`
+    or `null` if unknown. Uses saved entries first, then settings. */
+function getCycleStart(ds) {
+  const d = parseDate(ds);
+  // Collect all period-start dates from entries
+  const starts = getPeriodStarts();
+  // Find the last start on or before ds
+  const before = starts.filter(s => parseDate(s) <= d).sort().reverse();
+  if (before.length) return before[0];
+  // Fall back to settings
+  if (settings.lastPeriod) return settings.lastPeriod;
+  return null;
+}
+
+/** Return array of period-start dates (first day of each period run) */
+function getPeriodStarts() {
+  const keys = Object.keys(entries).sort();
+  const starts = [];
+  let inPeriod = false;
+  for (const k of keys) {
+    const e = entries[k];
+    if (e.period && !inPeriod) { starts.push(k); inPeriod = true; }
+    else if (!e.period) { inPeriod = false; }
+  }
+  return starts;
+}
+
+/** Compute average cycle length from stored data */
+function avgCycleLen() {
+  const starts = getPeriodStarts();
+  if (starts.length < 2) return parseInt(settings.cycleLen) || 28;
+  let sum = 0;
+  for (let i = 1; i < starts.length; i++) {
+    sum += diffDays(starts[i-1], starts[i]);
+  }
+  const avg = Math.round(sum / (starts.length - 1));
+  return (avg > 15 && avg < 60) ? avg : parseInt(settings.cycleLen) || 28;
+}
+
+/** Compute average period duration */
+function avgPeriodLen() {
+  if (Object.keys(entries).length === 0) return parseInt(settings.periodLen) || 5;
+  // Count consecutive period days per run
+  const keys = Object.keys(entries).sort();
+  let runs = [], cur = 0;
+  for (const k of keys) {
+    if (entries[k].period) { cur++; }
+    else if (cur > 0) { runs.push(cur); cur = 0; }
+  }
+  if (cur > 0) runs.push(cur);
+  if (!runs.length) return parseInt(settings.periodLen) || 5;
+  const avg = Math.round(runs.reduce((a,b)=>a+b,0) / runs.length);
+  return (avg >= 1 && avg <= 14) ? avg : parseInt(settings.periodLen) || 5;
+}
+
+/** Get the most recent known period start */
+function lastKnownPeriodStart() {
+  const starts = getPeriodStarts();
+  if (starts.length) return starts[starts.length - 1];
+  if (settings.lastPeriod) return settings.lastPeriod;
+  return null;
+}
+
+/** Predict next period start date */
+function nextPeriodStart() {
+  const lp = lastKnownPeriodStart();
+  if (!lp) return null;
+  const cl = avgCycleLen();
+  // How many cycles have passed?
+  const t = today();
+  const daysSince = diffDays(lp, t);
+  const cyclesPassed = Math.floor(daysSince / cl);
+  const next = addDays(parseDate(lp), (cyclesPassed + 1) * cl);
+  return dateStr(next);
+}
+
+/** Predict next ovulation date (14 days before next period) */
+function nextOvulation() {
+  const np = nextPeriodStart();
+  if (!np) return null;
+  const cl = avgCycleLen();
+  const ov = addDays(parseDate(np), -(cl - 14));
+  // If ov is in the past, add one cycle
+  if (ov <= new Date()) return dateStr(addDays(ov, cl));
+  return dateStr(ov);
+}
+
+/**
+ * Given a date string, return phase info object:
+ * { phase: 'men'|'fol'|'ov'|'lut', day, name, desc, color }
+ */
+function getPhaseForDate(ds) {
+  const lp = lastKnownPeriodStart();
+  if (!lp) return null;
+  const cl = avgCycleLen();
+  const pl = avgPeriodLen();
+
+  // Find cycle start for this date
+  const d = parseDate(ds);
+  const lpd = parseDate(lp);
+  const daysSince = Math.floor((d - lpd) / 86400000);
+  const cycleDay  = ((daysSince % cl) + cl) % cl; // 0-indexed
+
+  const ovDay = cl - 14; // day of ovulation in cycle (0-indexed)
+  const lutStart = ovDay + 1;
+
+  let phase, name, desc, color;
+
+  if (cycleDay < pl) {
+    // Menstruation
+    phase = 'men';
+    name  = 'Menstruation';
+    desc  = 'Östrogen & Progesteron sind am niedrigsten. Ruhe, Selbstfürsorge und Reflexion stehen im Vordergrund.';
+    color = 'men';
+  } else if (cycleDay < ovDay - 1) {
+    // Follikelphase
+    phase = 'fol';
+    name  = 'Follikelphase';
+    desc  = 'FSH lässt Follikel reifen, Östrogen steigt. Energie und Tatendrang nehmen zu – ideal für neue Projekte.';
+    color = 'fol';
+  } else if (cycleDay >= ovDay - 1 && cycleDay <= ovDay + 1) {
+    // Ovulation
+    phase = 'ov';
+    name  = 'Ovulation';
+    desc  = 'LH-Anstieg, Eisprung. Kommunikativ, selbstsicher und offen – der beste Zeitpunkt für Präsentationen & Gespräche.';
+    color = 'ov';
+  } else {
+    // Lutealphase
+    phase = 'lut';
+    const daysInLut = cycleDay - lutStart;
+    const halfLut = Math.floor((cl - lutStart) / 2);
+    if (daysInLut < halfLut) {
+      name  = 'Lutealphase (früh)';
+      desc  = 'Progesteron dominiert. Fokussiert, strukturiert – ideal für Detailarbeit und Planung.';
+    } else {
+      name  = 'Lutealphase (spät)';
+      desc  = 'Progesteron sinkt, PMS-Symptome möglich. Zeit für Wellness, Entspannung und Selfcare.';
+    }
+    color = 'lut';
+  }
+
+  return { phase, name, desc, color, cycleDay: cycleDay + 1 };
+}
+
+/* ==============================================
+   PAGE SWITCHING
+=============================================== */
+function switchPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');
+
+  if (name === 'calendar') renderCalendar();
+  if (name === 'predict')  renderPredictions();
+  if (name === 'plan')     loadSettingsUI();
+}
+
+/* ==============================================
+   TODAY PAGE
+=============================================== */
+
+/** Combine built-in + custom moods into one array for rendering */
+function allMoods() {
+  return [
+    ...MOODS,
+    ...customMoods.map(m => ({ id: m.id, label: `${m.emoji} ${m.name}`, custom: true }))
+  ];
+}
+
+/**
+ * Build (or rebuild) the mood chip grid.
+ * Called on init and after adding/deleting a custom mood.
+ */
+function renderMoodGrid() {
+  const grid = document.getElementById('moodGrid');
+  grid.innerHTML = '';
+
+  allMoods().forEach(m => {
+    const chip = document.createElement('button');
+    chip.className = 'mood-chip' + (m.custom ? ' custom' : '');
+    chip.dataset.id = m.id;
+    chip.onclick = () => toggleMood(m.id, chip);
+
+    // Label text node
+    chip.appendChild(document.createTextNode(m.label));
+
+    // Delete button for custom moods
+    if (m.custom) {
+      const del = document.createElement('button');
+      del.className = 'mood-chip-del';
+      del.textContent = '×';
+      del.title = 'Entfernen';
+      del.onclick = (e) => {
+        e.stopPropagation();
+        deleteCustomMood(m.id);
+      };
+      chip.appendChild(del);
+    }
+
+    // Re-apply active state if this mood was already selected
+    if (selectedMoods.includes(m.id)) chip.classList.add('active');
+
+    grid.appendChild(chip);
+  });
+}
+
+function initTodayPage() {
+  renderMoodGrid();
+
+  // Load today's entry if exists
+  const entry = entries[today()];
+  if (entry) {
+    if (entry.period !== undefined) setPeriod(entry.period, true);
+    if (entry.strength) setStrength(entry.strength, true);
+    if (entry.moods) {
+      selectedMoods = [...entry.moods];
+      // Active state is applied inside renderMoodGrid via selectedMoods
+      renderMoodGrid();
+    }
+    if (entry.note) document.getElementById('moodNote').value = entry.note;
+  }
+
+  updateHeaderBadge();
+  renderInsights();
+  renderMoodTrend();
+}
+
+/* ==============================================
+   CUSTOM MOODS – MODAL
+=============================================== */
+
+// Curated emoji palette for quick selection (feelings/emotions theme)
+const EMOJI_PALETTE = [
+  '😊','😄','🥰','😍','🤩','😎','🥳','😇',
+  '😌','😔','😢','😭','😤','😠','😡','🤬',
+  '😰','😨','😱','🤯','😴','🥱','😪','🤧',
+  '🥺','🙏','💪','🌟','✨','💜','🌸','🔥',
+  '🌈','🎯','🕊️','🌙','☀️','🌻','🍃','💎',
+  '🤗','🫶','😮','🤔','😏','😶','🙃','🫠',
+];
+
+let modalSelectedEmoji = '✨'; // default
+
+/** Open the add-mood bottom sheet */
+function openMoodModal() {
+  // Reset modal state
+  modalSelectedEmoji = '✨';
+  document.getElementById('emojiPreviewChar').textContent = '✨';
+  document.getElementById('emojiDirectInput').value = '';
+  document.getElementById('moodNameInput').value = '';
+  updateModalSaveBtn();
+
+  // Build emoji grid
+  buildEmojiGrid();
+
+  document.getElementById('modalBackdrop').classList.add('open');
+  document.getElementById('moodModal').classList.add('open');
+  // Focus name field after animation
+  setTimeout(() => document.getElementById('moodNameInput').focus(), 340);
+}
+
+/** Close the bottom sheet */
+function closeMoodModal() {
+  document.getElementById('modalBackdrop').classList.remove('open');
+  document.getElementById('moodModal').classList.remove('open');
+}
+
+/** Render the emoji quick-pick grid */
+function buildEmojiGrid() {
+  const grid = document.getElementById('emojiGrid');
+  grid.innerHTML = '';
+  EMOJI_PALETTE.forEach(em => {
+    const btn = document.createElement('button');
+    btn.className = 'emoji-pick' + (em === modalSelectedEmoji ? ' chosen' : '');
+    btn.textContent = em;
+    btn.type = 'button';
+    btn.onclick = () => selectEmoji(em, btn);
+    grid.appendChild(btn);
+  });
+}
+
+/** Select an emoji from the palette grid */
+function selectEmoji(em, btn) {
+  modalSelectedEmoji = em;
+  document.getElementById('emojiPreviewChar').textContent = em;
+  document.getElementById('emojiDirectInput').value = '';
+  // Highlight chosen
+  document.querySelectorAll('.emoji-pick').forEach(b => b.classList.remove('chosen'));
+  btn.classList.add('chosen');
+  updateModalSaveBtn();
+}
+
+/** Handle direct emoji typing/pasting into the hidden input on the preview box */
+function handleDirectEmoji(val) {
+  // Extract first "grapheme cluster" (emoji) from the typed value
+  // Using Intl.Segmenter when available, otherwise take first 2 chars (surrogate pair safe)
+  let em = '';
+  if (val) {
+    if (typeof Intl !== 'undefined' && Intl.Segmenter) {
+      const seg = new Intl.Segmenter();
+      const segs = [...seg.segment(val)];
+      if (segs.length) em = segs[0].segment;
+    } else {
+      // Fallback: take up to 2 code-units (handles most emoji)
+      em = val.slice(0, 2);
+    }
+  }
+  if (em) {
+    modalSelectedEmoji = em;
+    document.getElementById('emojiPreviewChar').textContent = em;
+    // Deselect palette
+    document.querySelectorAll('.emoji-pick').forEach(b => b.classList.remove('chosen'));
+    updateModalSaveBtn();
+  }
+}
+
+/** Enable/disable the save button based on form state */
+function updateModalSaveBtn() {
+  const nameVal = (document.getElementById('moodNameInput')?.value || '').trim();
+  const btn = document.getElementById('modalSaveBtn');
+  if (btn) btn.disabled = nameVal.length === 0;
+}
+
+/** Save the new custom mood to localStorage and refresh the chip grid */
+function saveCustomMood() {
+  const nameVal = document.getElementById('moodNameInput').value.trim();
+  if (!nameVal) { showToast('Bitte einen Namen eingeben'); return; }
+
+  // Generate a stable ID: timestamp-based, prefixed
+  const newId = 'custom_' + Date.now();
+  const newMood = { id: newId, emoji: modalSelectedEmoji, name: nameVal };
+
+  customMoods.push(newMood);
+  saveCustomMoodsStore(customMoods);
+
+  closeMoodModal();
+  renderMoodGrid();
+  showToast(`„${modalSelectedEmoji} ${nameVal}" hinzugefügt ✓`);
+}
+
+/** Delete a custom mood by id */
+function deleteCustomMood(id) {
+  customMoods = customMoods.filter(m => m.id !== id);
+  saveCustomMoodsStore(customMoods);
+  // Also remove from current selection if it was selected
+  selectedMoods = selectedMoods.filter(m => m !== id);
+  renderMoodGrid();
+  showToast('Gefühl entfernt');
+}
+
+function updateHeaderBadge() {
+  const badge = document.getElementById('headerBadge');
+  const ph = getPhaseForDate(today());
+  if (!ph) {
+    badge.textContent = '🌸 Zyklustag unbekannt';
+    return;
+  }
+  badge.textContent = `🌸 Zyklustag ${ph.cycleDay} · ${ph.name.split('(')[0].trim()}`;
+
+  // Update phase banner
+  const banner = document.getElementById('phaseBanner');
+  banner.className = `phase-banner ${ph.color}`;
+  document.getElementById('phaseName').textContent = ph.name;
+  document.getElementById('phaseDesc').textContent = ph.desc;
+}
+
+function setPeriod(val, silent) {
+  selectedPeriod = val;
+  document.getElementById('btnPeriodYes').classList.toggle('active',  val);
+  document.getElementById('btnPeriodNo').classList.toggle('active',  !val);
+  document.getElementById('strengthRow').style.display = val ? 'flex' : 'none';
+  if (!val) { selectedStrength = null; document.querySelectorAll('.str-btn').forEach(b=>b.classList.remove('active')); }
+}
+
+function setStrength(val, silent) {
+  selectedStrength = val;
+  document.querySelectorAll('.str-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('str-' + val).classList.add('active');
+}
+
+function toggleMood(id, chip) {
+  const idx = selectedMoods.indexOf(id);
+  if (idx === -1) selectedMoods.push(id);
+  else selectedMoods.splice(idx, 1);
+  chip.classList.toggle('active', selectedMoods.includes(id));
+}
+
+function saveToday() {
+  const entry = {
+    period:   selectedPeriod,
+    strength: selectedPeriod ? selectedStrength : null,
+    moods:    [...selectedMoods],
+    note:     document.getElementById('moodNote').value.trim(),
+    ts:       Date.now()
+  };
+  entries[today()] = entry;
+  saveEntriesStore(entries);
+  // Recalculate lastPeriod in settings
+  if (selectedPeriod) {
+    const starts = getPeriodStarts();
+    if (starts.length) settings.lastPeriod = starts[starts.length-1];
+    saveSettingsStore(settings);
+  }
+  updateHeaderBadge();
+  renderInsights();
+  renderMoodTrend();
+  showToast('Eintrag gespeichert ✓');
+}
+
+/* ==============================================
+   INSIGHTS & MOOD TREND
+=============================================== */
+function renderInsights() {
+  const cl = avgCycleLen();
+  const pl = avgPeriodLen();
+  const count = Object.keys(entries).length;
+  document.getElementById('ins-cycle').textContent  = cl + 'd';
+  document.getElementById('ins-period').textContent = pl + 'd';
+  document.getElementById('ins-entries').textContent = count;
+}
+
+function renderMoodTrend() {
+  const container = document.getElementById('moodTrend');
+  container.innerHTML = '';
+  const days = 14;
+  for (let i = days - 1; i >= 0; i--) {
+    const ds = dateStr(addDays(new Date(), -i));
+    const e  = entries[ds];
+    let score = 0;
+    if (e && e.moods && e.moods.length) {
+      score = Math.round(e.moods.reduce((a,m) => a + (MOOD_SCORE[m]||50), 0) / e.moods.length);
+    }
+    const bar = document.createElement('div');
+    bar.className = 'mood-bar';
+    bar.style.height = (score || 4) + '%';
+    const tip = document.createElement('div');
+    tip.className = 'mood-bar-tip';
+    tip.textContent = e ? (e.moods.length ? e.moods.map(id => allMoods().find(x=>x.id===id)?.label || id).join(', ') : 'Kein Mood') : '–';
+    bar.appendChild(tip);
+    container.appendChild(bar);
+  }
+}
+
+/* ==============================================
+   CALENDAR PAGE
+=============================================== */
+const MONTHS_DE = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+const DAYS_DE   = ['Mo','Di','Mi','Do','Fr','Sa','So'];
+
+function initCalendar() {
+  const n = new Date();
+  calYear  = n.getFullYear();
+  calMonth = n.getMonth();
+}
+
+function changeMonth(delta) {
+  calMonth += delta;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  if (calMonth < 0)  { calMonth = 11; calYear--; }
+  renderCalendar();
+}
+
+/* ------------------------------------------------------------------
+   PHASE META – descriptions + recommendations per phase key
+------------------------------------------------------------------ */
+const PHASE_META = {
+  men: {
+    mood:  'Reflektiert, ruhig, Rückzugsbedürfnis. Östrogen & Progesteron am niedrigsten.',
+    do:    'Ruhe & Selfcare · Journaling · ruhige Gespräche · sanfte Bewegung',
+    dont:  'Wichtige Verhandlungen · intensive Sport-Events · große Entscheidungen',
+  },
+  fol: {
+    mood:  'Kreativ, voller Energie, Tatendrang. Östrogen steigt an.',
+    do:    'Neue Projekte starten · Brainstorming · intensiver Sport · kreative Arbeit',
+    dont:  'Passivität · reiner Rückzug',
+  },
+  ov: {
+    mood:  'Kommunikativ, selbstsicher, offen. LH-Peak & Eisprung.',
+    do:    'Verhandlungen · Präsentationen · Networking · Dates · Auftritte',
+    dont:  'Isolation · reine Routinearbeit',
+  },
+  lut: {
+    mood:  'Erst fokussiert & strukturiert, später PMS-Symptome möglich. Progesteron dominiert.',
+    do:    'Detailarbeit · Planung · Wellness (spät) · ruhige Produktivität',
+    dont:  'Große neue Projekte · intensive soziale Verpflichtungen (spät)',
+  },
+};
+
+function renderCalendar() {
+  document.getElementById('calMonthLabel').textContent = `${MONTHS_DE[calMonth]} ${calYear}`;
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+
+  // ── Day-of-week headers (Monday-first) ──
+  DAYS_DE.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'cal-dow';
+    el.textContent = d;
+    grid.appendChild(el);
+  });
+
+  const firstDay    = new Date(calYear, calMonth, 1);
+  const startDow    = (firstDay.getDay() + 6) % 7; // 0=Mon
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const prevDays    = new Date(calYear, calMonth, 0).getDate();
+  const todayStr    = today();
+  const lp          = lastKnownPeriodStart();
+
+  // ── Prev-month padding cells ──
+  for (let i = 0; i < startDow; i++) {
+    const el = document.createElement('div');
+    el.className = 'cal-day other-month';
+    el.textContent = prevDays - startDow + 1 + i;
+    grid.appendChild(el);
+  }
+
+  // ── Current-month day cells ──
+  for (let d = 1; d <= daysInMonth; d++) {
+    const ds = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const el = document.createElement('div');
+    el.className = 'cal-day';
+    el.textContent = d;
+
+    // "Today" marker
+    if (ds === todayStr) el.classList.add('today');
+
+    // ── Phase colouring ──
+    if (lp) {
+      const ph = getPhaseForDate(ds);
+      if (ph) {
+        const isFuture = parseDate(ds) > new Date();
+        el.classList.add('phase-' + ph.phase);
+        if (isFuture) el.classList.add('predicted');
+
+        // Phase dot below the number
+        const dot = document.createElement('span');
+        dot.className = `phase-dot ${ph.phase}`;
+        // Hide dot for today-marker (already has its own indicator)
+        if (ds !== todayStr) el.appendChild(dot);
+      }
+    }
+
+    el.onclick = () => showDayDetail(ds, el);
+    grid.appendChild(el);
+  }
+}
+
+/* ------------------------------------------------------------------
+   ENHANCED DAY DETAIL PANEL
+   Shows phase info, mood description, recommendations, and any
+   recorded entry for the tapped day.
+------------------------------------------------------------------ */
+function showDayDetail(ds, triggerEl) {
+  const box = document.getElementById('dayDetailBox');
+  const e   = entries[ds];
+  const ph  = getPhaseForDate(ds);
+  const lp  = lastKnownPeriodStart();
+
+  // ── Head section ──
+  const isFuture   = parseDate(ds) > new Date();
+  const headClass  = ph ? ph.phase : 'none';
+  const phaseName  = ph ? ph.name  : 'Kein Zyklus';
+  const cycleLabel = ph ? `Zyklustag ${ph.cycleDay}` : '';
+  const predBadge  = (ph && isFuture)
+    ? `<div class="day-detail-predicted-badge">🔮 Prognose</div>` : '';
+
+  const dateLabel = parseDate(ds).toLocaleDateString('de-DE',
+    { weekday:'long', day:'numeric', month:'long' });
+
+  // ── Body: mood + recommendations (only if phase known) ──
+  let bodyHtml = '';
+  if (ph) {
+    const meta = PHASE_META[ph.phase];
+    bodyHtml += `
+      <div class="day-detail-section">
+        <div class="day-detail-label">Typische Stimmung</div>
+        <div class="day-detail-text">${meta.mood}</div>
+      </div>
+      <div class="day-detail-section">
+        <div class="day-detail-label">✓ Empfohlen</div>
+        <div class="day-detail-text" style="color:#1a6644">${meta.do}</div>
+      </div>
+      <div class="day-detail-section">
+        <div class="day-detail-label">✗ Eher meiden</div>
+        <div class="day-detail-text" style="color:#9e2a3a">${meta.dont}</div>
+      </div>`;
+  } else if (!lp) {
+    bodyHtml = `<div class="day-detail-text" style="color:var(--text-soft)">
+      Richte deinen Zyklus in den Einstellungen ein, um Phasendaten zu sehen.</div>`;
+  }
+
+  // ── Body: recorded entry ──
+  if (e) {
+    let entryHtml = '';
+    if (e.period) entryHtml += `🩸 Periode${e.strength ? ' · <em>' + e.strength + '</em>' : ''}`;
+    if (e.moods?.length) {
+      const labels = e.moods.map(m => allMoods().find(x => x.id === m)?.label || m).join(' · ');
+      entryHtml += (entryHtml ? '<br>' : '') + `💜 ${labels}`;
+    }
+    if (e.note) entryHtml += (entryHtml ? '<br>' : '') + `📝 <em>${e.note}</em>`;
+    if (entryHtml) {
+      bodyHtml += `<div class="day-detail-section" style="margin-top:10px">
+        <div class="day-detail-label">Dein Eintrag</div>
+        <div class="day-detail-entry">${entryHtml}</div>
+      </div>`;
+    }
+  } else if (!isFuture && ph) {
+    bodyHtml += `<div class="day-detail-section" style="margin-top:10px">
+      <div class="day-detail-text" style="color:var(--text-soft);font-size:0.76rem;font-style:italic">
+        Kein Eintrag für diesen Tag.</div>
+    </div>`;
+  }
+
+  box.innerHTML = `
+    <div class="day-detail-head ${headClass}">
+      <div class="day-detail-date">${dateLabel}</div>
+      <div class="day-detail-phase">${phaseName}</div>
+      ${cycleLabel ? `<div class="day-detail-cycleday">${cycleLabel}</div>` : ''}
+      ${predBadge}
+    </div>
+    <div class="day-detail-body">${bodyHtml}</div>`;
+
+  box.classList.add('show');
+
+  // Smooth scroll to detail
+  setTimeout(() => box.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60);
+}
+
+/* ==============================================
+   PREDICTION PAGE
+=============================================== */
+function renderPredictions() {
+  const np  = nextPeriodStart();
+  const nov = nextOvulation();
+  const lp  = lastKnownPeriodStart();
+
+  const noDataCard = document.getElementById('noDataCard');
+  noDataCard.style.display = lp ? 'none' : 'block';
+
+  if (np) {
+    const d = parseDate(np);
+    const t = new Date();
+    const diff = Math.round((d - t) / 86400000);
+    document.getElementById('predPeriodDate').textContent = formatDateDE(np);
+    document.getElementById('predPeriodDays').textContent = diff > 0 ? `in ${diff} Tagen` : (diff === 0 ? 'Heute' : `vor ${-diff} Tagen`);
+  }
+  if (nov) {
+    const d = parseDate(nov);
+    const t = new Date();
+    const diff = Math.round((d - t) / 86400000);
+    document.getElementById('predOvDate').textContent = formatDateDE(nov);
+    document.getElementById('predOvDays').textContent = diff > 0 ? `in ${diff} Tagen` : (diff === 0 ? 'Heute' : 'vergangen');
+  }
+
+  // Phase date ranges (based on next period)
+  if (np) {
+    const cl = avgCycleLen();
+    const pl = avgPeriodLen();
+    const npd = parseDate(np);
+    const prevStart = addDays(npd, -cl);
+
+    const menEnd  = addDays(prevStart, pl - 1);
+    const folEnd  = addDays(npd, -16);
+    const ovDate  = addDays(npd, -14);
+    const lutEnd  = addDays(npd, -1);
+
+    document.getElementById('pred-men-days').textContent =
+      `${formatDateDE(dateStr(prevStart))} – ${formatDateDE(dateStr(menEnd))}`;
+    document.getElementById('pred-fol-days').textContent =
+      `${formatDateDE(dateStr(addDays(prevStart, pl)))} – ${formatDateDE(dateStr(folEnd))}`;
+    document.getElementById('pred-ov-days').textContent =
+      formatDateDE(dateStr(ovDate)) + ' (± 2 Tage)';
+    document.getElementById('pred-lut-days').textContent =
+      `${formatDateDE(dateStr(addDays(ovDate, 1)))} – ${formatDateDE(dateStr(lutEnd))}`;
+  }
+}
+
+/* ==============================================
+   PLANNING PAGE
+=============================================== */
+function checkDate() {
+  const ds = document.getElementById('planDate').value;
+  if (!ds) { showToast('Bitte Datum wählen'); return; }
+  const ph = getPhaseForDate(ds);
+  const result = document.getElementById('planResult');
+
+  if (!ph) {
+    result.style.display = 'block';
+    result.className = 'plan-result show card';
+    result.style.background = 'var(--lilac-soft)';
+    result.innerHTML = '<p style="color:var(--text-mid);font-size:0.85rem;">Keine Daten vorhanden. Bitte richte zunächst deinen Zyklus ein.</p>';
+    return;
+  }
+
+  const plans = {
+    men: {
+      do:   'Ruhe, Selfcare, Journaling, entspannte Spaziergänge, ruhige Gespräche',
+      dont: 'Wichtige Verhandlungen, intensive Sport-Events, große Entscheidungen',
+      bg:   'linear-gradient(135deg,#fde8ec,#f9d0d9)',
+      tc:   'var(--phase-men)'
+    },
+    fol: {
+      do:   'Neue Projekte starten, Brainstorming, intensiver Sport, kreative Arbeit, soziale Aktivitäten',
+      dont: 'Rückzug, Passivität, reine Routinearbeit',
+      bg:   'linear-gradient(135deg,#f0eafd,#e0d0f5)',
+      tc:   'var(--phase-fol)'
+    },
+    ov: {
+      do:   'Präsentationen, Verhandlungen, Networking, Dates, öffentliche Auftritte',
+      dont: 'Isolation, reine Administrationsarbeit',
+      bg:   'linear-gradient(135deg,#fef0e0,#fde2c8)',
+      tc:   'var(--phase-ov)'
+    },
+    lut: {
+      do:   'Detailarbeit, Planung, ruhige Produktivität; (spät:) Wellness, Entspannung, Selfcare',
+      dont: 'Große neue Projekte, intensive soziale Verpflichtungen (spät); wichtige Verhandlungen ganz spät',
+      bg:   'linear-gradient(135deg,#e8f7f2,#c8eee4)',
+      tc:   'var(--phase-lut)'
+    }
+  };
+
+  const p = plans[ph.phase];
+  result.style.display = 'block';
+  result.style.background = p.bg;
+  result.className = 'plan-result show';
+  result.innerHTML = `
+    <div class="plan-result-phase" style="color:${p.tc}">${ph.name} · Tag ${ph.cycleDay}</div>
+    <div class="plan-result-title">${formatDateDE(ds)}</div>
+    <hr class="plan-divider">
+    <div class="plan-do">${p.do}</div>
+    <hr class="plan-divider">
+    <div class="plan-dont">${p.dont}</div>
+  `;
+}
+
+function loadSettingsUI() {
+  document.getElementById('settingLastPeriod').value = settings.lastPeriod || '';
+  document.getElementById('settingCycleLen').value   = settings.cycleLen || 28;
+  document.getElementById('settingPeriodLen').value  = settings.periodLen || 5;
+  // set today as default for plan date if empty
+  if (!document.getElementById('planDate').value) {
+    document.getElementById('planDate').value = today();
+  }
+}
+
+function saveSettings() {
+  settings.lastPeriod = document.getElementById('settingLastPeriod').value;
+  settings.cycleLen   = parseInt(document.getElementById('settingCycleLen').value) || 28;
+  settings.periodLen  = parseInt(document.getElementById('settingPeriodLen').value) || 5;
+  saveSettingsStore(settings);
+  updateHeaderBadge();
+  showToast('Einstellungen gespeichert ✓');
+}
+
+/* ==============================================
+   UTILITIES
+=============================================== */
+function formatDateDE(ds) {
+  if (!ds) return '–';
+  const d = parseDate(ds);
+  return d.toLocaleDateString('de-DE', { day:'numeric', month:'short' });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+/* ==============================================
+   EXPORT / IMPORT
+=============================================== */
+
+/** Export all app data as a timestamped JSON file */
+function exportData() {
+  const payload = {
+    version:    2,
+    app:        'Rynva',
+    exportedAt: new Date().toISOString(),
+    settings:   loadSettings(),
+    entries:    loadEntries(),
+    customMoods: loadCustomMoods()
+  };
+
+  const json = JSON.stringify(payload, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `rynva-backup-${today()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  // Remember last export date
+  localStorage.setItem('rynva_last_export', today());
+  updateBackupUI();
+  showToast('Backup gespeichert ✓');
+}
+
+/** Open file picker for import */
+function triggerImport() {
+  document.getElementById('importFileInput').value = ''; // allow re-selecting same file
+  document.getElementById('importFileInput').click();
+}
+
+/** Handle the selected import file */
+async function handleImportFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  let data;
+  try {
+    const text = await file.text();
+    data = JSON.parse(text);
+    // Basic validation: must have version + at least one of the expected keys
+    if (!data.version || (!data.settings && !data.entries)) {
+      throw new Error('Ungültiges Format');
+    }
+  } catch(e) {
+    showToast('Diese Datei kann nicht gelesen werden. Bitte wähle ein gültiges Backup.');
+    return;
+  }
+
+  const ok = confirm(
+    'Bestehende Daten werden überschrieben.\n\nFortfahren?'
+  );
+  if (!ok) return;
+
+  // Apply imported data
+  if (data.settings)    localStorage.setItem('rynva_settings',     JSON.stringify(data.settings));
+  if (data.entries)     localStorage.setItem('rynva_entries',      JSON.stringify(data.entries));
+  if (data.customMoods) localStorage.setItem('rynva_custom_moods', JSON.stringify(data.customMoods));
+
+  showToast('Daten wiederhergestellt ✓');
+  // Reload after short delay so user sees the toast
+  setTimeout(() => location.reload(), 1400);
+}
+
+/* ==============================================
+   BACKUP REMINDER (once per month)
+=============================================== */
+
+const BACKUP_KEY = 'rynva_backup_dismissed'; // stored value: "YYYY-MM"
+
+function checkBackupReminder() {
+  const dismissed = localStorage.getItem(BACKUP_KEY) || '';
+  const thisMonth = today().slice(0, 7); // "YYYY-MM"
+  if (dismissed !== thisMonth) {
+    document.getElementById('backupBanner').classList.add('show');
+  }
+}
+
+function dismissBackupBanner() {
+  const thisMonth = today().slice(0, 7);
+  localStorage.setItem(BACKUP_KEY, thisMonth);
+  document.getElementById('backupBanner').classList.remove('show');
+}
+
+/** Refresh the "last backup" line in the settings card */
+function updateBackupUI() {
+  const last = localStorage.getItem('rynva_last_export');
+  const el   = document.getElementById('lastBackupDate');
+  if (!el) return;
+  el.textContent = last ? formatDateDE(last) : 'Noch kein Backup';
+}
+
+/* ==============================================
+   INIT
+=============================================== */
+initCalendar();
+initTodayPage();
+document.getElementById('planDate').value = today();
+
+// Backup reminder + UI
+checkBackupReminder();
+updateBackupUI();
+</script>
+</body>
+</html>
