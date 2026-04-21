@@ -1021,6 +1021,240 @@
   .day-detail.show { display: block; }
 
   /* ===========================
+     DAY EDITOR MODAL
+  =========================== */
+  .editor-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(40,20,35,0.50);
+    z-index: 400;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+    backdrop-filter: blur(3px);
+  }
+  .editor-backdrop.open { opacity: 1; pointer-events: all; }
+
+  .editor-sheet {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    background: var(--surface);
+    border-radius: 22px 22px 0 0;
+    z-index: 401;
+    transform: translateY(100%);
+    transition: transform 0.32s cubic-bezier(0.32,0.72,0,1);
+    max-height: 92vh;
+    overflow-y: auto;
+    padding-bottom: env(safe-area-inset-bottom, 16px);
+  }
+  .editor-sheet.open { transform: translateY(0); }
+
+  .editor-handle {
+    width: 36px; height: 4px;
+    border-radius: 2px;
+    background: var(--rose-soft);
+    margin: 12px auto 0;
+  }
+
+  /* Coloured header strip – matches phase colour */
+  .editor-head {
+    padding: 14px 18px 12px;
+    color: white;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .editor-head.men  { background: linear-gradient(120deg,#e87a8a,#c95577); }
+  .editor-head.fol  { background: linear-gradient(120deg,#3dba80,#1a8a5a); }
+  .editor-head.ov   { background: linear-gradient(120deg,#f0cc40,#c8a010); }
+  .editor-head.lut  { background: linear-gradient(120deg,#9b7bb5,#7052a0); }
+  .editor-head.none { background: linear-gradient(120deg,#c97b8a,#9b7bb5); }
+
+  .editor-head-info { flex: 1; }
+  .editor-head-date {
+    font-size: 0.72rem;
+    opacity: 0.85;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-weight: 500;
+  }
+  .editor-head-phase {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-style: italic;
+    margin: 2px 0 1px;
+  }
+  .editor-head-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.68rem;
+    background: rgba(255,255,255,0.22);
+    border-radius: 100px;
+    padding: 3px 9px;
+    margin-top: 4px;
+    font-weight: 500;
+  }
+  .editor-close {
+    width: 30px; height: 30px;
+    border: none;
+    background: rgba(255,255,255,0.22);
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .editor-close:hover { background: rgba(255,255,255,0.35); }
+
+  .editor-body { padding: 16px 18px 8px; }
+
+  .editor-section-title {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-soft);
+    margin-bottom: 8px;
+  }
+
+  /* Period toggle inside editor */
+  .editor-period-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .editor-toggle {
+    flex: 1;
+    border: 2px solid var(--rose-soft);
+    background: white;
+    border-radius: 100px;
+    padding: 9px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text-mid);
+    transition: all 0.18s;
+  }
+  .editor-toggle.active {
+    background: var(--rose-deep);
+    border-color: var(--rose-deep);
+    color: white;
+  }
+  .editor-strength-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .editor-str-btn {
+    flex: 1;
+    border: 1.5px solid var(--rose-soft);
+    background: white;
+    border-radius: 100px;
+    padding: 6px 4px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.76rem;
+    cursor: pointer;
+    color: var(--text-mid);
+    transition: all 0.18s;
+  }
+  .editor-str-btn.active {
+    background: var(--rose-soft);
+    border-color: var(--rose-deep);
+    color: var(--rose-deep);
+    font-weight: 600;
+  }
+
+  /* Mood chips inside editor */
+  .editor-mood-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 14px;
+  }
+
+  /* Note textarea inside editor */
+  .editor-note {
+    width: 100%;
+    border: 1.5px solid var(--rose-soft);
+    border-radius: var(--radius-sm);
+    padding: 10px 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    color: var(--text-dark);
+    background: var(--rose-pale);
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 16px;
+  }
+  .editor-note:focus { border-color: var(--rose-deep); }
+  .editor-note::placeholder { color: var(--text-soft); }
+
+  /* Action buttons */
+  .editor-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .editor-save-btn {
+    flex: 2;
+    background: linear-gradient(120deg, var(--rose-deep), var(--lilac-deep));
+    color: white;
+    border: none;
+    border-radius: 100px;
+    padding: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.12s;
+  }
+  .editor-save-btn:active { opacity: 0.85; transform: scale(0.98); }
+  .editor-cancel-btn {
+    flex: 1;
+    background: none;
+    border: 1.5px solid var(--rose-soft);
+    border-radius: 100px;
+    padding: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    cursor: pointer;
+    color: var(--text-mid);
+    transition: background 0.15s;
+  }
+  .editor-cancel-btn:hover { background: var(--rose-pale); }
+
+  .editor-delete-btn {
+    width: 100%;
+    background: none;
+    border: none;
+    color: #c0394e;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    cursor: pointer;
+    padding: 10px;
+    margin-bottom: 8px;
+    opacity: 0.75;
+    transition: opacity 0.15s;
+  }
+  .editor-delete-btn:hover { opacity: 1; text-decoration: underline; }
+
+  /* "Bearbeiten" / "Eintragen" badge on calendar days */
+  .cal-day.has-entry::before {
+    content: '';
+    position: absolute;
+    top: 2px; right: 2px;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--rose-deep);
+  }
+
+  /* ===========================
      BACKUP REMINDER BANNER
   =========================== */
   .backup-banner {
@@ -1419,6 +1653,59 @@
     Planung
   </button>
 </nav>
+
+<!-- =====================
+     DAY EDITOR MODAL
+===================== -->
+<div class="editor-backdrop" id="editorBackdrop" onclick="closeEditor()"></div>
+
+<div class="editor-sheet" id="editorSheet" role="dialog" aria-modal="true">
+  <div class="editor-handle"></div>
+
+  <!-- Phase-coloured header -->
+  <div class="editor-head none" id="editorHead">
+    <div class="editor-head-info">
+      <div class="editor-head-date" id="editorHeadDate">–</div>
+      <div class="editor-head-phase" id="editorHeadPhase">–</div>
+      <div class="editor-head-badge" id="editorHeadBadge">✏️ Bearbeiten</div>
+    </div>
+    <button class="editor-close" onclick="closeEditor()" aria-label="Schließen">✕</button>
+  </div>
+
+  <div class="editor-body">
+
+    <!-- Periode -->
+    <div class="editor-section-title">🩸 Periode</div>
+    <div class="editor-period-row">
+      <button class="editor-toggle" id="edBtnNo"  onclick="edSetPeriod(false)">Nein</button>
+      <button class="editor-toggle" id="edBtnYes" onclick="edSetPeriod(true)">Ja</button>
+    </div>
+    <div class="editor-strength-row" id="edStrengthRow" style="display:none">
+      <button class="editor-str-btn" id="edStr-leicht" onclick="edSetStrength('leicht')">🟡 Leicht</button>
+      <button class="editor-str-btn" id="edStr-mittel" onclick="edSetStrength('mittel')">🟠 Mittel</button>
+      <button class="editor-str-btn" id="edStr-stark"  onclick="edSetStrength('stark')">🔴 Stark</button>
+    </div>
+
+    <!-- Stimmung -->
+    <div class="editor-section-title">💜 Stimmung</div>
+    <div class="editor-mood-grid" id="edMoodGrid"></div>
+
+    <!-- Notiz -->
+    <div class="editor-section-title">📝 Notiz</div>
+    <textarea class="editor-note" id="edNote" rows="2"
+              placeholder="z. B. Kopfschmerzen, wenig geschlafen …"></textarea>
+
+    <!-- Actions -->
+    <div class="editor-actions">
+      <button class="editor-save-btn"   onclick="saveEditorEntry()">Speichern</button>
+      <button class="editor-cancel-btn" onclick="closeEditor()">Abbrechen</button>
+    </div>
+    <button class="editor-delete-btn" id="edDeleteBtn" onclick="deleteEditorEntry()">
+      🗑 Eintrag löschen
+    </button>
+
+  </div>
+</div>
 
 <!-- =====================
      ADD-MOOD MODAL
@@ -2052,6 +2339,10 @@ function renderCalendar() {
   const grid = document.getElementById('calGrid');
   grid.innerHTML = '';
 
+  // Close any open detail panel when re-rendering
+  const box = document.getElementById('dayDetailBox');
+  box.classList.remove('show');
+
   // ── Day-of-week headers (Monday-first) ──
   DAYS_DE.forEach(d => {
     const el = document.createElement('div');
@@ -2096,12 +2387,21 @@ function renderCalendar() {
         // Phase dot below the number
         const dot = document.createElement('span');
         dot.className = `phase-dot ${ph.phase}`;
-        // Hide dot for today-marker (already has its own indicator)
         if (ds !== todayStr) el.appendChild(dot);
       }
     }
 
-    el.onclick = () => showDayDetail(ds, el);
+    // Small dot indicator if entry exists
+    if (entries[ds]) el.classList.add('has-entry');
+
+    // Routing: future days → info panel; today + past → editor
+    const isFutureDay = parseDate(ds) > new Date();
+    if (isFutureDay) {
+      el.onclick = () => showDayDetail(ds, el);
+    } else {
+      el.onclick = () => openEditor(ds);
+    }
+
     grid.appendChild(el);
   }
 }
@@ -2185,6 +2485,159 @@ function showDayDetail(ds, triggerEl) {
 
   // Smooth scroll to detail
   setTimeout(() => box.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60);
+}
+
+/* ==============================================
+   DAY EDITOR – open / close / save / delete
+=============================================== */
+
+/* Internal state for the currently open editor */
+let _edDate      = null;
+let _edPeriod    = null;
+let _edStrength  = null;
+let _edMoods     = [];
+
+/** Open the day editor for a given date string (today or past only) */
+function openEditor(ds) {
+  // Close the info panel if open
+  document.getElementById('dayDetailBox').classList.remove('show');
+
+  _edDate     = ds;
+  const e     = entries[ds] || {};
+  const ph    = getPhaseForDate(ds);
+  const isToday = ds === today();
+
+  // ── Header ──
+  const head = document.getElementById('editorHead');
+  head.className = `editor-head ${ph ? ph.phase : 'none'}`;
+
+  document.getElementById('editorHeadDate').textContent =
+    parseDate(ds).toLocaleDateString('de-DE', { weekday:'long', day:'numeric', month:'long' });
+  document.getElementById('editorHeadPhase').textContent =
+    ph ? `${ph.name} · Tag ${ph.cycleDay}` : 'Kein Zyklus';
+  document.getElementById('editorHeadBadge').textContent =
+    isToday ? '✏️ Heute eintragen' : (e && Object.keys(e).length ? '✏️ Bearbeiten' : '➕ Eintragen');
+
+  // ── Period ──
+  _edPeriod   = e.period ?? null;
+  _edStrength = e.strength || null;
+  edSetPeriod(_edPeriod, true);
+  if (_edStrength) edSetStrength(_edStrength, true);
+
+  // ── Moods ──
+  _edMoods = [...(e.moods || [])];
+  buildEdMoodGrid();
+
+  // ── Note ──
+  document.getElementById('edNote').value = e.note || '';
+
+  // ── Delete button: only show if entry already exists ──
+  document.getElementById('edDeleteBtn').style.display =
+    (e && Object.keys(e).length) ? 'block' : 'none';
+
+  // ── Open sheet ──
+  document.getElementById('editorBackdrop').classList.add('open');
+  document.getElementById('editorSheet').classList.add('open');
+}
+
+function closeEditor() {
+  document.getElementById('editorBackdrop').classList.remove('open');
+  document.getElementById('editorSheet').classList.remove('open');
+  _edDate = null;
+}
+
+/* Period toggle helpers */
+function edSetPeriod(val, silent) {
+  _edPeriod = val;
+  document.getElementById('edBtnYes').classList.toggle('active',  val === true);
+  document.getElementById('edBtnNo').classList.toggle('active',   val === false);
+  document.getElementById('edStrengthRow').style.display = val ? 'flex' : 'none';
+  if (!val) {
+    _edStrength = null;
+    document.querySelectorAll('.editor-str-btn').forEach(b => b.classList.remove('active'));
+  }
+}
+
+function edSetStrength(val, silent) {
+  _edStrength = val;
+  document.querySelectorAll('.editor-str-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('edStr-' + val).classList.add('active');
+}
+
+/** Build mood chip grid inside editor, reflecting current _edMoods */
+function buildEdMoodGrid() {
+  const grid = document.getElementById('edMoodGrid');
+  grid.innerHTML = '';
+  allMoods().forEach(m => {
+    const chip = document.createElement('button');
+    chip.className = 'mood-chip' + (_edMoods.includes(m.id) ? ' active' : '');
+    chip.textContent = m.label;
+    chip.onclick = () => {
+      const idx = _edMoods.indexOf(m.id);
+      if (idx === -1) _edMoods.push(m.id);
+      else _edMoods.splice(idx, 1);
+      chip.classList.toggle('active', _edMoods.includes(m.id));
+    };
+    grid.appendChild(chip);
+  });
+}
+
+/** Save the editor entry to localStorage */
+function saveEditorEntry() {
+  if (!_edDate) return;
+
+  const entry = {
+    period:   _edPeriod,
+    strength: _edPeriod ? _edStrength : null,
+    moods:    [..._edMoods],
+    note:     document.getElementById('edNote').value.trim(),
+    ts:       Date.now()
+  };
+
+  entries[_edDate] = entry;
+  saveEntriesStore(entries);
+
+  // Recalculate lastPeriod in settings if needed
+  const starts = getPeriodStarts();
+  if (starts.length) {
+    settings.lastPeriod = starts[starts.length - 1];
+    saveSettingsStore(settings);
+  }
+
+  const label = formatDateDE(_edDate);
+  closeEditor();
+  renderCalendar();
+
+  // If today was edited, refresh the today-page too
+  if (_edDate === today()) {
+    entries = loadEntries();
+    initTodayPage();
+  }
+
+  showToast(`Eintrag für ${label} gespeichert ✓`);
+}
+
+/** Delete the entry for the current editor date */
+function deleteEditorEntry() {
+  if (!_edDate) return;
+  const label = formatDateDE(_edDate);
+  if (!confirm(`Eintrag für ${label} wirklich löschen?`)) return;
+
+  delete entries[_edDate];
+  saveEntriesStore(entries);
+
+  // Recalculate lastPeriod
+  const starts = getPeriodStarts();
+  settings.lastPeriod = starts.length ? starts[starts.length - 1] : '';
+  saveSettingsStore(settings);
+
+  closeEditor();
+  renderCalendar();
+
+  // Refresh today if affected
+  if (_edDate === today()) initTodayPage();
+
+  showToast(`Eintrag für ${label} gelöscht`);
 }
 
 /* ==============================================
