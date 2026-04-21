@@ -1255,6 +1255,306 @@
   }
 
   /* ===========================
+     DIARY PAGE
+  =========================== */
+  .diary-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    gap: 8px;
+  }
+  .diary-nav-btn {
+    width: 36px; height: 36px;
+    border: 1.5px solid var(--rose-soft);
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    font-size: 1.1rem;
+    color: var(--rose-deep);
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.18s;
+    flex-shrink: 0;
+  }
+  .diary-nav-btn:hover { background: var(--rose-soft); }
+  .diary-month-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--text-dark);
+    flex: 1;
+    text-align: center;
+  }
+  .diary-export-btn {
+    background: none;
+    border: 1.5px solid var(--rose-soft);
+    border-radius: var(--radius-sm);
+    padding: 7px 11px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.76rem;
+    cursor: pointer;
+    color: var(--rose-deep);
+    font-weight: 500;
+    white-space: nowrap;
+    transition: background 0.15s;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .diary-export-btn:hover { background: var(--rose-pale); }
+
+  /* Summary strip */
+  .diary-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .diary-summary-card {
+    background: white;
+    border-radius: var(--radius-sm);
+    padding: 11px 10px;
+    text-align: center;
+    box-shadow: var(--shadow-card);
+  }
+  .diary-summary-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--rose-deep);
+    line-height: 1;
+  }
+  .diary-summary-lbl {
+    font-size: 0.68rem;
+    color: var(--text-soft);
+    margin-top: 4px;
+    line-height: 1.3;
+  }
+  .diary-top-mood {
+    background: linear-gradient(120deg, var(--lilac-soft), var(--rose-soft));
+    border-radius: var(--radius-sm);
+    padding: 11px 14px;
+    margin-bottom: 14px;
+    font-size: 0.84rem;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .diary-top-mood-emoji { font-size: 1.4rem; }
+
+  /* Entry cards */
+  .diary-entry {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    margin-bottom: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow 0.18s, transform 0.12s;
+    border-left: 4px solid var(--rose-soft);
+  }
+  .diary-entry:active { transform: scale(0.99); }
+  .diary-entry.men { border-color: #e87a8a; }
+  .diary-entry.fol { border-color: #3dba80; }
+  .diary-entry.ov  { border-color: #d4aa00; }
+  .diary-entry.lut { border-color: #9b7bb5; }
+
+  .diary-entry-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px 8px;
+    gap: 8px;
+  }
+  .diary-entry-date {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-dark);
+  }
+  .diary-entry-date-sub {
+    font-size: 0.72rem;
+    color: var(--text-soft);
+    font-weight: 400;
+    margin-left: 4px;
+  }
+  .diary-phase-badge {
+    font-size: 0.68rem;
+    font-weight: 600;
+    border-radius: 100px;
+    padding: 3px 9px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .diary-phase-badge.men { background: #ffd6dc; color: #9e2a3a; }
+  .diary-phase-badge.fol { background: #c8f0e0; color: #1a6644; }
+  .diary-phase-badge.ov  { background: #fff0b3; color: #7a5500; }
+  .diary-phase-badge.lut { background: #e4d4f8; color: #5e2d91; }
+
+  .diary-entry-body {
+    padding: 0 14px 12px;
+  }
+  .diary-entry-moods {
+    font-size: 1.1rem;
+    margin-bottom: 4px;
+    letter-spacing: 0.04em;
+  }
+  .diary-entry-period {
+    font-size: 0.78rem;
+    color: var(--rose-deep);
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+  .diary-entry-note {
+    font-size: 0.82rem;
+    color: var(--text-mid);
+    line-height: 1.5;
+    /* clamp to 2 lines */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .diary-entry-note.expanded {
+    display: block;
+    -webkit-line-clamp: unset;
+  }
+  .diary-read-more {
+    font-size: 0.76rem;
+    color: var(--rose-deep);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px 0;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+  }
+
+  /* Empty state */
+  .diary-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-soft);
+  }
+  .diary-empty-icon { font-size: 2.8rem; margin-bottom: 12px; }
+  .diary-empty-text {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .diary-cta-btn {
+    background: linear-gradient(120deg, var(--rose-deep), var(--lilac-deep));
+    color: white;
+    border: none;
+    border-radius: 100px;
+    padding: 12px 24px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .diary-cta-btn:hover { opacity: 0.88; }
+
+  /* ===========================
+     PATTERN RECOGNITION
+  =========================== */
+
+  /* Proactive alert banner at top of prediction page */
+  .pattern-alert {
+    border-radius: var(--radius);
+    padding: 13px 15px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    animation: fadeIn 0.35s ease;
+  }
+  .pattern-alert.men { background: linear-gradient(120deg,#fde8ec,#f9d4da); border-left: 3px solid #e87a8a; }
+  .pattern-alert.fol { background: linear-gradient(120deg,#e6faf2,#cef2e0); border-left: 3px solid #3dba80; }
+  .pattern-alert.ov  { background: linear-gradient(120deg,#fffbe6,#fff0b0); border-left: 3px solid #d4aa00; }
+  .pattern-alert.lut { background: linear-gradient(120deg,#f2ecfc,#e4d4f8); border-left: 3px solid #9b7bb5; }
+  .pattern-alert-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 1px; }
+  .pattern-alert-text {
+    flex: 1;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--text-dark);
+  }
+  .pattern-alert-text strong { display: block; font-size: 0.84rem; margin-bottom: 2px; }
+
+  /* Pattern cards list */
+  .pattern-card {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    margin-bottom: 10px;
+    padding: 14px 15px 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    position: relative;
+    animation: fadeIn 0.3s ease;
+    border-left: 4px solid var(--rose-soft);
+  }
+  .pattern-card.men { border-color: #e87a8a; }
+  .pattern-card.fol { border-color: #3dba80; }
+  .pattern-card.ov  { border-color: #d4aa00; }
+  .pattern-card.lut { border-color: #9b7bb5; }
+
+  .pattern-card-icon { font-size: 1.5rem; flex-shrink: 0; margin-top: 1px; }
+  .pattern-card-body { flex: 1; }
+  .pattern-card-text {
+    font-size: 0.85rem;
+    color: var(--text-dark);
+    line-height: 1.55;
+    margin-bottom: 5px;
+  }
+  .pattern-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex-wrap: wrap;
+  }
+  .pattern-phase-badge {
+    font-size: 0.68rem;
+    font-weight: 600;
+    border-radius: 100px;
+    padding: 2px 9px;
+  }
+  .pattern-phase-badge.men { background: #ffd6dc; color: #9e2a3a; }
+  .pattern-phase-badge.fol { background: #c8f0e0; color: #1a6644; }
+  .pattern-phase-badge.ov  { background: #fff0b3; color: #7a5500; }
+  .pattern-phase-badge.lut { background: #e4d4f8; color: #5e2d91; }
+  .pattern-freq {
+    font-size: 0.72rem;
+    color: var(--text-soft);
+    font-weight: 500;
+  }
+  .pattern-dismiss {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-soft);
+    font-size: 0.9rem;
+    line-height: 1;
+    padding: 2px 4px;
+    transition: color 0.15s;
+  }
+  .pattern-dismiss:hover { color: var(--text-dark); }
+
+  /* Empty / insufficient-data state */
+  .pattern-empty {
+    text-align: center;
+    padding: 22px 16px;
+    color: var(--text-soft);
+    font-size: 0.84rem;
+    line-height: 1.6;
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+  }
+  .pattern-empty-icon { font-size: 2rem; margin-bottom: 8px; }
+
+  /* ===========================
      BACKUP REMINDER BANNER
   =========================== */
   .backup-banner {
@@ -1477,6 +1777,9 @@
 <!-- PREDICTION PAGE -->
 <div class="page" id="page-predict">
 
+  <!-- Proactive pattern alert (shown when a pattern is ~3 days away) -->
+  <div id="patternAlertArea"></div>
+
   <div class="pred-row">
     <div class="pred-card period">
       <div class="pred-icon">🩸</div>
@@ -1541,6 +1844,14 @@
 
   <div class="card" id="noDataCard" style="text-align:center;color:var(--text-soft);font-size:0.85rem;padding:24px;">
     ℹ️ Trage mindestens einen Periodenanfang ein, um Vorhersagen zu sehen.
+  </div>
+
+  <!-- Pattern section -->
+  <div class="card">
+    <div class="card-title" style="justify-content:space-between;display:flex;align-items:center;">
+      <span><span class="emoji">🔍</span> Deine Muster</span>
+    </div>
+    <div id="patternList"></div>
   </div>
 
 </div>
@@ -1628,7 +1939,50 @@
       <input class="form-input" type="number" id="settingPeriodLen" min="2" max="10" value="5">
     </div>
     <button class="save-btn" onclick="saveSettings()">Einstellungen speichern</button>
+    <button onclick="restorePatterns()" style="width:100%;background:none;border:1.5px solid var(--rose-soft);border-radius:100px;padding:11px;font-family:'DM Sans',sans-serif;font-size:0.85rem;cursor:pointer;color:var(--text-mid);margin-top:8px;transition:background 0.15s;" onmouseover="this.style.background='var(--rose-pale)'" onmouseout="this.style.background='none'">
+      🔄 Ausgeblendete Muster wiederherstellen
+    </button>
   </div>
+
+</div>
+
+<!-- DIARY PAGE -->
+<div class="page" id="page-diary">
+
+  <!-- Month navigation + export -->
+  <div class="diary-header">
+    <button class="diary-nav-btn" onclick="changeDiaryMonth(-1)">‹</button>
+    <span class="diary-month-label" id="diaryMonthLabel">–</span>
+    <button class="diary-nav-btn" onclick="changeDiaryMonth(1)">›</button>
+    <button class="diary-export-btn" onclick="exportDiaryMonth()">
+      <span>📄</span> Export
+    </button>
+  </div>
+
+  <!-- Monthly summary stats -->
+  <div class="diary-summary" id="diarySummary">
+    <div class="diary-summary-card">
+      <div class="diary-summary-num" id="diarySumPeriod">–</div>
+      <div class="diary-summary-lbl">Perioden&shy;tage</div>
+    </div>
+    <div class="diary-summary-card">
+      <div class="diary-summary-num" id="diarySumEntries">–</div>
+      <div class="diary-summary-lbl">Einträge</div>
+    </div>
+    <div class="diary-summary-card">
+      <div class="diary-summary-num" id="diarySumNotes">–</div>
+      <div class="diary-summary-lbl">Tage mit Notiz</div>
+    </div>
+  </div>
+
+  <!-- Top mood banner -->
+  <div class="diary-top-mood" id="diaryTopMood" style="display:none">
+    <span class="diary-top-mood-emoji" id="diaryTopMoodEmoji">–</span>
+    <span id="diaryTopMoodText">–</span>
+  </div>
+
+  <!-- Entry list -->
+  <div id="diaryList"></div>
 
 </div>
 
@@ -1647,6 +2001,10 @@
   <button class="nav-btn" id="nav-predict" onclick="switchPage('predict')">
     <svg viewBox="0 0 24 24" fill="none" stroke="#9b9baa" stroke-width="1.8"><path d="M2 20s4-4 10-4 10 4 10 4"/><path d="M12 4a4 4 0 0 1 4 4c0 3-4 6-4 6S8 11 8 8a4 4 0 0 1 4-4z"/></svg>
     Vorhersage
+  </button>
+  <button class="nav-btn" id="nav-diary" onclick="switchPage('diary')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#9b9baa" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="7" x2="16" y2="7"/><line x1="12" y1="11" x2="16" y2="11"/><line x1="12" y1="15" x2="14" y2="15"/></svg>
+    Tagebuch
   </button>
   <button class="nav-btn" id="nav-plan" onclick="switchPage('plan')">
     <svg viewBox="0 0 24 24" fill="none" stroke="#9b9baa" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
@@ -2001,6 +2359,171 @@ function switchPage(name) {
   if (name === 'calendar') renderCalendar();
   if (name === 'predict')  renderPredictions();
   if (name === 'plan')     loadSettingsUI();
+  if (name === 'diary')    renderDiary();
+}
+
+/* ==============================================
+   DIARY PAGE
+=============================================== */
+
+let diaryYear  = new Date().getFullYear();
+let diaryMonth = new Date().getMonth(); // 0-indexed
+
+function changeDiaryMonth(delta) {
+  diaryMonth += delta;
+  if (diaryMonth > 11) { diaryMonth = 0; diaryYear++; }
+  if (diaryMonth < 0)  { diaryMonth = 11; diaryYear--; }
+  renderDiary();
+}
+
+function renderDiary() {
+  document.getElementById('diaryMonthLabel').textContent =
+    `${MONTHS_DE[diaryMonth]} ${diaryYear}`;
+
+  const prefix = `${diaryYear}-${String(diaryMonth + 1).padStart(2, '0')}`;
+  const monthEntries = Object.keys(entries)
+    .filter(ds => ds.startsWith(prefix) && entries[ds])
+    .sort();
+
+  // ── Summary stats ──
+  const periodDays = monthEntries.filter(ds => entries[ds].period).length;
+  const noteDays   = monthEntries.filter(ds => entries[ds].note?.trim()).length;
+  document.getElementById('diarySumPeriod').textContent  = periodDays;
+  document.getElementById('diarySumEntries').textContent = monthEntries.length;
+  document.getElementById('diarySumNotes').textContent   = noteDays;
+
+  // ── Top mood ──
+  const moodCount = {};
+  monthEntries.forEach(ds => {
+    (entries[ds].moods || []).forEach(id => { moodCount[id] = (moodCount[id] || 0) + 1; });
+  });
+  const topMoodId = Object.keys(moodCount).sort((a,b) => moodCount[b]-moodCount[a])[0];
+  const topMoodBanner = document.getElementById('diaryTopMood');
+  if (topMoodId) {
+    const mo = allMoods().find(m => m.id === topMoodId);
+    if (mo) {
+      const parts = mo.label.split(' ');
+      document.getElementById('diaryTopMoodEmoji').textContent = parts[0];
+      document.getElementById('diaryTopMoodText').textContent  =
+        `Deine häufigste Stimmung: ${parts.slice(1).join(' ')}`;
+      topMoodBanner.style.display = 'flex';
+    }
+  } else {
+    topMoodBanner.style.display = 'none';
+  }
+
+  // ── Entry list ──
+  const list = document.getElementById('diaryList');
+  list.innerHTML = '';
+
+  if (monthEntries.length === 0) {
+    const isNow = diaryYear === new Date().getFullYear() &&
+                  diaryMonth === new Date().getMonth();
+    list.innerHTML = `
+      <div class="diary-empty">
+        <div class="diary-empty-icon">📖</div>
+        <div class="diary-empty-text">Noch keine Einträge für diesen Monat –<br>fang heute an!</div>
+        ${isNow ? `<button class="diary-cta-btn" onclick="switchPage('today')">Heutigen Tag eintragen</button>` : ''}
+      </div>`;
+    return;
+  }
+
+  monthEntries.forEach(ds => {
+    const e  = entries[ds];
+    const ph = getPhaseForDate(ds);
+
+    const dayLabel = parseDate(ds).toLocaleDateString('de-DE',
+      { weekday:'long', day:'numeric', month:'long' });
+
+    const phaseClass = ph ? ph.phase : '';
+    const phaseName  = ph ? ph.name.split(' (')[0] : '';
+    const phaseEmoji = { men:'🔴', fol:'🟢', ov:'🟡', lut:'🟣' }[phaseClass] || '';
+
+    const moodEmojis = (e.moods || [])
+      .map(id => { const mo = allMoods().find(m => m.id===id); return mo ? mo.label.split(' ')[0] : ''; })
+      .filter(Boolean).join(' ');
+
+    const periodLine = e.period
+      ? `<div class="diary-entry-period">🩸 Periode${e.strength ? ' · '+e.strength : ''}</div>` : '';
+
+    const noteId  = 'dnote-' + ds.replace(/-/g,'');
+    const rmId    = 'drm-'   + ds.replace(/-/g,'');
+    const longNote = e.note && e.note.length > 80;
+    const notePart = e.note ? `
+      <div class="diary-entry-note" id="${noteId}">${escapeHtml(e.note)}</div>
+      ${longNote ? `<button class="diary-read-more" id="${rmId}"
+        onclick="event.stopPropagation();toggleDiaryNote('${noteId}','${rmId}')">mehr lesen</button>` : ''}` : '';
+
+    const card = document.createElement('div');
+    card.className = `diary-entry ${phaseClass}`;
+    card.innerHTML = `
+      <div class="diary-entry-top">
+        <span class="diary-entry-date">${dayLabel}</span>
+        ${phaseName ? `<span class="diary-phase-badge ${phaseClass}">${phaseEmoji} ${phaseName}</span>` : ''}
+      </div>
+      <div class="diary-entry-body">
+        ${moodEmojis ? `<div class="diary-entry-moods">${moodEmojis}</div>` : ''}
+        ${periodLine}
+        ${notePart}
+      </div>`;
+
+    card.addEventListener('click', (ev) => {
+      if (ev.target.classList.contains('diary-read-more')) return;
+      openEditor(ds);
+    });
+
+    list.appendChild(card);
+  });
+}
+
+function toggleDiaryNote(noteId, btnId) {
+  const n = document.getElementById(noteId);
+  const b = document.getElementById(btnId);
+  if (!n || !b) return;
+  n.classList.toggle('expanded');
+  b.textContent = n.classList.contains('expanded') ? 'weniger' : 'mehr lesen';
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+          .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
+function exportDiaryMonth() {
+  const prefix = `${diaryYear}-${String(diaryMonth + 1).padStart(2, '0')}`;
+  const monthEntries = Object.keys(entries)
+    .filter(ds => ds.startsWith(prefix) && entries[ds]).sort();
+
+  if (monthEntries.length === 0) { showToast('Keine Einträge zum Exportieren'); return; }
+
+  const monthName = MONTHS_DE[diaryMonth].toLowerCase();
+  const fileName  = `tagebuch-${monthName}-${diaryYear}.txt`;
+
+  let lines = [`Rynva – Tagebuch ${MONTHS_DE[diaryMonth]} ${diaryYear}`, '='.repeat(40), ''];
+
+  monthEntries.forEach(ds => {
+    const e = entries[ds];
+    const ph = getPhaseForDate(ds);
+    const dateLabel = parseDate(ds).toLocaleDateString('de-DE',
+      { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+    lines.push(`📅 ${dateLabel}`);
+    if (ph) lines.push(`   Phase: ${ph.name}`);
+    if (e.period) lines.push(`   Periode: Ja${e.strength ? ' ('+e.strength+')' : ''}`);
+    if (e.moods?.length) {
+      const labels = e.moods.map(id => allMoods().find(m=>m.id===id)?.label||id).join(', ');
+      lines.push(`   Stimmung: ${labels}`);
+    }
+    if (e.note) lines.push(`   Notiz: ${e.note}`);
+    lines.push('');
+  });
+
+  const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = fileName;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  showToast(`${fileName} exportiert ✓`);
 }
 
 /* ==============================================
@@ -2687,11 +3210,235 @@ function renderPredictions() {
     document.getElementById('pred-lut-days').textContent =
       `${formatDateDE(dateStr(addDays(ovDate, 1)))} – ${formatDateDE(dateStr(lutEnd))}`;
   }
+
+  // Render pattern recognition section
+  renderPatterns();
 }
 
 /* ==============================================
-   PLANNING PAGE
+   PATTERN RECOGNITION ENGINE
+   Runs entirely locally – no data leaves the device.
+   A "pattern" = a mood appearing in ≥3 cycles
+   in the same phase bucket.
 =============================================== */
+
+const PATTERN_DISMISSED_KEY = 'rynva_dismissed_patterns'; // stored as JSON array of pattern IDs
+
+/* Load / save dismissed pattern IDs */
+function loadDismissed() {
+  try { return JSON.parse(localStorage.getItem(PATTERN_DISMISSED_KEY) || '[]'); }
+  catch(e) { return []; }
+}
+function saveDismissed(arr) {
+  localStorage.setItem(PATTERN_DISMISSED_KEY, JSON.stringify(arr));
+}
+
+/** Restore all hidden patterns */
+function restorePatterns() {
+  saveDismissed([]);
+  showToast('Alle Muster wiederhergestellt ✓');
+  renderPredictions();
+}
+
+/**
+ * Analyse entries and return an array of pattern objects:
+ * { id, phase, moodId, label, count, total, dayRange }
+ * Only patterns with count >= MIN_CYCLES are returned.
+ */
+function analysePatterns() {
+  const MIN_CYCLES = 3;
+  const starts = getPeriodStarts();
+  if (starts.length < MIN_CYCLES) return null; // not enough data
+
+  const cl = avgCycleLen();
+  const pl = avgPeriodLen();
+
+  // Define phase day-range buckets (0-indexed cycle days)
+  const ovDay   = cl - 14;
+  const phaseBuckets = [
+    { key: 'men_early', phase: 'men', label: 'Menstruation (Tag 1–3)',   from: 0,         to: 2              },
+    { key: 'men_late',  phase: 'men', label: 'Menstruation (Tag 4–7)',   from: 3,         to: pl - 1         },
+    { key: 'fol',       phase: 'fol', label: 'Follikelphase',             from: pl,        to: ovDay - 2      },
+    { key: 'ov',        phase: 'ov',  label: 'Ovulationsphase',           from: ovDay - 1, to: ovDay + 1      },
+    { key: 'lut_early', phase: 'lut', label: 'frühe Lutealphase',         from: ovDay + 2, to: ovDay + Math.floor((cl - ovDay) / 2) },
+    { key: 'lut_late',  phase: 'lut', label: 'späte Lutealphase (PMS)',   from: ovDay + Math.ceil((cl - ovDay) / 2), to: cl - 1 },
+  ].filter(b => b.from <= b.to); // guard against invalid ranges
+
+  // For each bucket, count how many distinct cycles had each mood
+  // structure: bucketKey → moodId → Set of cycleIndex
+  const bucketMoodCycles = {};
+  phaseBuckets.forEach(b => { bucketMoodCycles[b.key] = {}; });
+
+  // Map each entry date to (cycleIndex, cycleDay)
+  Object.keys(entries).forEach(ds => {
+    const e = entries[ds];
+    if (!e || !e.moods?.length) return;
+    const d = parseDate(ds);
+    const lp = lastKnownPeriodStart();
+    if (!lp) return;
+    const lpd = parseDate(lp);
+    const daysSince = Math.floor((d - lpd) / 86400000);
+    const cycleIdx  = Math.floor(((daysSince % (cl * 100)) + cl * 100) / cl); // approximate cycle number
+    const cycleDay  = ((daysSince % cl) + cl) % cl;
+
+    phaseBuckets.forEach(b => {
+      if (cycleDay >= b.from && cycleDay <= b.to) {
+        e.moods.forEach(moodId => {
+          if (!bucketMoodCycles[b.key][moodId]) bucketMoodCycles[b.key][moodId] = new Set();
+          bucketMoodCycles[b.key][moodId].add(cycleIdx);
+        });
+      }
+    });
+  });
+
+  // Total observable cycles per bucket
+  const totalCycles = starts.length;
+
+  // Build pattern list
+  const patterns = [];
+  phaseBuckets.forEach(b => {
+    Object.entries(bucketMoodCycles[b.key]).forEach(([moodId, cycleSet]) => {
+      const count = cycleSet.size;
+      if (count >= MIN_CYCLES) {
+        const mo = allMoods().find(m => m.id === moodId);
+        if (!mo) return;
+        const moodName  = mo.label.split(' ').slice(1).join(' ');
+        const moodEmoji = mo.label.split(' ')[0];
+        patterns.push({
+          id:      `${b.key}_${moodId}`,
+          phase:   b.phase,
+          bucket:  b.key,
+          label:   b.label,
+          moodId,
+          moodName,
+          moodEmoji,
+          count,
+          total:   Math.min(totalCycles, count + 2), // reasonable "of N"
+        });
+      }
+    });
+  });
+
+  // Sort by frequency descending, return top 5
+  return patterns.sort((a, b) => b.count - a.count).slice(0, 5);
+}
+
+/** Render the Muster section and proactive alerts */
+function renderPatterns() {
+  const dismissed = loadDismissed();
+  const patterns  = analysePatterns();
+  const list      = document.getElementById('patternList');
+  const alertArea = document.getElementById('patternAlertArea');
+
+  // ── Proactive alert: any pattern hitting in next 3 days? ──
+  alertArea.innerHTML = '';
+  if (patterns) {
+    const cl  = avgCycleLen();
+    const ovDay = cl - 14;
+    const pl  = avgPeriodLen();
+
+    // Which cycle day is today?
+    const lp   = lastKnownPeriodStart();
+    if (lp) {
+      const daysSinceLP = Math.floor((new Date() - parseDate(lp)) / 86400000);
+      const todayCycleDay = ((daysSinceLP % cl) + cl) % cl;
+
+      const phaseBuckets = [
+        { key:'men_early', from:0,         to:2               },
+        { key:'men_late',  from:3,         to:pl-1            },
+        { key:'fol',       from:pl,        to:ovDay-2         },
+        { key:'ov',        from:ovDay-1,   to:ovDay+1         },
+        { key:'lut_early', from:ovDay+2,   to:ovDay+Math.floor((cl-ovDay)/2) },
+        { key:'lut_late',  from:ovDay+Math.ceil((cl-ovDay)/2), to:cl-1 },
+      ].filter(b => b.from <= b.to);
+
+      // Find patterns whose bucket starts in 1–3 days from now
+      const upcoming = patterns.filter(p => {
+        if (dismissed.includes(p.id)) return false;
+        const bucket = phaseBuckets.find(b => b.key === p.bucket);
+        if (!bucket) return false;
+        const daysUntil = ((bucket.from - todayCycleDay) + cl) % cl;
+        return daysUntil >= 1 && daysUntil <= 3;
+      });
+
+      upcoming.slice(0, 2).forEach(p => {
+        const bucket  = phaseBuckets.find(b => b.key === p.bucket);
+        const daysOut = bucket ? ((bucket.from - todayCycleDay) + cl) % cl : 0;
+        const tips = {
+          men: 'Plane etwas Ruhe und Selfcare ein 🛁',
+          fol: 'Ideal für neue Projekte und kreative Energie ✨',
+          ov:  'Perfekt für Gespräche und Networking 🌟',
+          lut: 'Ruhige Produktivität und Entspannung stehen an 🌿',
+        };
+        const div = document.createElement('div');
+        div.className = `pattern-alert ${p.phase}`;
+        div.innerHTML = `
+          <div class="pattern-alert-icon">${p.moodEmoji}</div>
+          <div class="pattern-alert-text">
+            <strong>In ${daysOut} Tag${daysOut>1?'en':''} könnte ${p.moodName.toLowerCase()} kommen</strong>
+            Basierend auf deinen bisherigen Einträgen – ${tips[p.phase]}
+          </div>`;
+        alertArea.appendChild(div);
+      });
+    }
+  }
+
+  // ── Pattern cards ──
+  if (!patterns) {
+    // Not enough cycles
+    list.innerHTML = `
+      <div class="pattern-empty">
+        <div class="pattern-empty-icon">🌱</div>
+        Noch sammle ich Daten – nach 3 Zyklen zeige ich dir deine persönlichen Muster.
+      </div>`;
+    return;
+  }
+
+  const visible = patterns.filter(p => !dismissed.includes(p.id));
+
+  if (visible.length === 0) {
+    list.innerHTML = `
+      <div class="pattern-empty">
+        <div class="pattern-empty-icon">✓</div>
+        Alle Muster wurden ausgeblendet. Du kannst sie in den Einstellungen wiederherstellen.
+      </div>`;
+    return;
+  }
+
+  const phaseLabel = { men:'Menstruation', fol:'Follikelphase', ov:'Ovulation', lut:'Lutealphase' };
+  const phaseIcon  = { men:'🔴', fol:'🟢', ov:'🟡', lut:'🟣' };
+  const sentences  = {
+    men: n => `Du neigst dazu, dich in deiner Periode oft ${n.toLowerCase()} zu fühlen 🌙`,
+    fol: n => `In der Follikelphase bist du häufig ${n.toLowerCase()} – nutze diese Energie ✨`,
+    ov:  n => `Rund um den Eisprung bist du oft ${n.toLowerCase()} – ideal für Begegnungen 🌟`,
+    lut: n => `In der Lutealphase wirst du regelmäßig ${n.toLowerCase()} – schenk dir Raum 🌿`,
+  };
+
+  list.innerHTML = '';
+  visible.forEach(p => {
+    const card = document.createElement('div');
+    card.className = `pattern-card ${p.phase}`;
+    card.innerHTML = `
+      <div class="pattern-card-icon">${p.moodEmoji}</div>
+      <div class="pattern-card-body">
+        <div class="pattern-card-text">${(sentences[p.phase] || (n=>n))(p.moodName)}</div>
+        <div class="pattern-card-meta">
+          <span class="pattern-phase-badge ${p.phase}">${phaseIcon[p.phase]} ${p.label}</span>
+          <span class="pattern-freq">${p.count} von ${p.total} Zyklen</span>
+        </div>
+      </div>
+      <button class="pattern-dismiss" onclick="dismissPattern('${p.id}')" title="Ausblenden">×</button>`;
+    list.appendChild(card);
+  });
+}
+
+/** Dismiss a single pattern by ID */
+function dismissPattern(id) {
+  const d = loadDismissed();
+  if (!d.includes(id)) d.push(id);
+  saveDismissed(d);
+  renderPatterns();
+}
 function checkDate() {
   const ds = document.getElementById('planDate').value;
   if (!ds) { showToast('Bitte Datum wählen'); return; }
